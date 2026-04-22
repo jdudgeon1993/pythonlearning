@@ -1,13 +1,11 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Python Sandbox & Crash Course</title>
+    <title>Python Powerhouse: Crash Course & Sandbox</title>
     
     <script src="https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js"></script>
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/python/python.min.js"></script>
@@ -15,7 +13,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/edit/matchbrackets.min.js"></script>
 
     <style>
-        /* Warm Minimalist & Rustic Chic Aesthetic */
         :root {
             --bg-color: #fdfaf6;
             --surface-color: #f2efe4;
@@ -23,49 +20,38 @@
             --text-light: #7a756b;
             --accent-green: #687a55;
             --accent-green-hover: #546344;
-            --oak-border: #a67c52; /* Cottage oak tone */
+            --oak-border: #a67c52; 
             --terminal-bg: #2d2c29;
             --terminal-text: #e8e3d9;
             --border-radius: 12px;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: system-ui, -apple-system, sans-serif;
             color: var(--text-dark);
             display: flex;
             flex-direction: column;
             height: 100vh;
             overflow: hidden;
-            
-            /* Subtle Green Gingham Background */
             background-color: var(--bg-color);
             background-image: 
-              linear-gradient(90deg, rgba(104, 122, 85, 0.04) 50%, transparent 50%),
-              linear-gradient(rgba(104, 122, 85, 0.04) 50%, transparent 50%);
-            background-size: 24px 24px;
+              linear-gradient(90deg, rgba(104, 122, 85, 0.03) 50%, transparent 50%),
+              linear-gradient(rgba(104, 122, 85, 0.03) 50%, transparent 50%);
+            background-size: 30px 30px;
         }
 
         header {
             background-color: var(--accent-green);
             color: white;
-            padding: 1rem;
+            padding: 0.8rem 1.2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             z-index: 10;
             border-bottom: 3px solid var(--oak-border);
-        }
-
-        header h1 {
-            font-size: 1.2rem;
-            font-weight: 600;
         }
 
         .toggle-btn {
@@ -75,190 +61,64 @@
             padding: 0.5rem 1rem;
             border-radius: 20px;
             cursor: pointer;
-            font-size: 0.9rem;
-            transition: background 0.2s;
+            font-size: 0.85rem;
+            font-weight: 600;
         }
 
-        .toggle-btn:hover {
-            background: rgba(255,255,255,0.3);
-        }
+        .container { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+        @media (min-width: 768px) { .container { flex-direction: row; } }
 
-        .container {
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-            overflow: hidden;
-        }
-
-        @media (min-width: 768px) {
-            .container {
-                flex-direction: row;
-            }
-        }
-
-        /* Sidebar for Course Mode */
         .sidebar {
-            background-color: rgba(242, 239, 228, 0.95);
-            padding: 1.5rem;
+            background-color: rgba(242, 239, 228, 0.9);
+            padding: 1.2rem;
             display: flex;
             flex-direction: column;
             gap: 1rem;
             overflow-y: auto;
             border-bottom: 2px solid var(--oak-border);
-            backdrop-filter: blur(4px);
+            backdrop-filter: blur(5px);
         }
-
-        @media (min-width: 768px) {
-            .sidebar {
-                width: 320px;
-                border-bottom: none;
-                border-right: 2px solid var(--oak-border);
-            }
-        }
-
-        .sidebar.hidden {
-            display: none;
-        }
+        @media (min-width: 768px) { .sidebar { width: 320px; border-bottom: none; border-right: 2px solid var(--oak-border); } }
+        .sidebar.hidden { display: none; }
 
         .lesson-btn {
-            background: none;
-            border: none;
-            text-align: left;
-            padding: 0.75rem;
-            border-radius: 8px;
-            cursor: pointer;
-            color: var(--text-dark);
-            font-weight: 500;
-            transition: all 0.2s ease;
+            background: none; border: none; text-align: left; padding: 0.7rem; border-radius: 8px;
+            cursor: pointer; color: var(--text-dark); font-weight: 500; transition: all 0.2s;
         }
-
-        .lesson-btn:hover {
-            background: rgba(255,255,255,0.6);
-            transform: translateX(4px);
-        }
-
-        .lesson-btn.active {
-            background: white;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            color: var(--accent-green);
-            border-left: 4px solid var(--accent-green);
-        }
+        .lesson-btn:hover { background: rgba(255,255,255,0.5); transform: translateX(3px); }
+        .lesson-btn.active { background: white; color: var(--accent-green); border-left: 4px solid var(--accent-green); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
 
         .lesson-brief {
-            font-size: 0.95rem;
-            color: var(--text-light);
-            line-height: 1.5;
-            background: white;
-            padding: 1.2rem;
-            border-radius: var(--border-radius);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-            border: 1px solid rgba(166, 124, 82, 0.2);
+            font-size: 0.9rem; color: var(--text-light); line-height: 1.5; background: white;
+            padding: 1rem; border-radius: var(--border-radius); border: 1px solid rgba(166,124,82,0.2);
         }
 
-        /* Workspace: Editor + Terminal */
-        .workspace {
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-            padding: 1rem;
-            gap: 1rem;
-        }
-
+        .workspace { display: flex; flex-direction: column; flex: 1; padding: 1rem; gap: 1rem; min-height: 0; }
         .editor-section, .terminal-section {
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-            border-radius: var(--border-radius);
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            border: 1px solid rgba(166, 124, 82, 0.3);
-            background: white;
+            display: flex; flex-direction: column; flex: 1; border-radius: var(--border-radius);
+            overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border: 1px solid rgba(166,124,82,0.3);
+            background: white; min-height: 0; /* Critical for internal scrolling */
         }
 
         .panel-header {
-            background-color: #f4f0e6;
-            padding: 0.6rem 1rem;
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--text-dark);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid rgba(166, 124, 82, 0.2);
+            background-color: #f4f0e6; padding: 0.6rem 1rem; font-size: 0.8rem; font-weight: 700;
+            color: var(--text-dark); display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid rgba(166,124,82,0.2); text-transform: uppercase; letter-spacing: 0.5px;
         }
 
-        .btn-group {
-            display: flex;
-            gap: 0.5rem;
-        }
+        .run-btn { background-color: var(--accent-green); color: white; border: none; padding: 0.4rem 1.2rem; border-radius: 20px; cursor: pointer; font-weight: bold; }
+        .clear-btn { background: transparent; border: 1px solid #ccc; color: #777; padding: 0.2rem 0.8rem; border-radius: 12px; cursor: pointer; font-size: 0.7rem; }
 
-        .run-btn, .clear-btn {
-            border: none;
-            padding: 0.4rem 1.2rem;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: opacity 0.2s, transform 0.1s;
-        }
-
-        .run-btn {
-            background-color: var(--accent-green);
-            color: white;
-        }
-
-        .clear-btn {
-            background-color: transparent;
-            color: var(--text-light);
-            border: 1px solid var(--text-light);
-        }
-
-        .run-btn:hover, .clear-btn:hover {
-            opacity: 0.9;
-        }
-
-        .run-btn:active, .clear-btn:active {
-            transform: scale(0.96);
-        }
-
-        .run-btn:disabled {
-            background-color: #aab59d;
-            cursor: not-allowed;
-        }
-
-        /* CodeMirror Customization for Earthy Theme */
-        .CodeMirror {
-            flex: 1;
-            height: auto;
-            font-family: "Courier New", Courier, monospace;
-            font-size: 15px;
-            padding: 0.5rem 0;
-        }
+        .CodeMirror { flex: 1; height: 100%; font-family: "Courier New", monospace; font-size: 15px; }
         
-        .CodeMirror-gutters {
-            background-color: #fdfaf6;
-            border-right: 1px solid #e0dbce;
-        }
-        
-        .CodeMirror-linenumber {
-            color: #b0a896;
-        }
-
         .terminal {
-            flex: 1;
-            background-color: var(--terminal-bg);
-            color: var(--terminal-text);
-            padding: 1rem;
-            font-family: "Courier New", Courier, monospace;
-            font-size: 14px;
-            overflow-y: auto;
-            white-space: pre-wrap;
-            margin: 0;
-            line-height: 1.4;
+            flex: 1; background-color: var(--terminal-bg); color: var(--terminal-text);
+            padding: 1rem; font-family: "Courier New", monospace; font-size: 14px;
+            overflow-y: auto; white-space: pre-wrap; margin: 0; line-height: 1.5;
         }
-
-        .term-success { color: #8fbc8f; }
-        .term-error { color: #ff7f50; }
-
+        .term-error { color: #ffab91; font-weight: bold; }
+        .term-success { color: #c5e1a5; }
+        .term-meta { color: #90a4ae; font-style: italic; }
     </style>
 </head>
 <body>
@@ -270,188 +130,138 @@
 
     <div class="container">
         <aside id="sidebar" class="sidebar">
-            <div id="lesson-brief" class="lesson-brief">
-                <strong>Welcome!</strong> Select a week below to begin your crash course.
-            </div>
-            <div id="lesson-list">
-                </div>
+            <div id="lesson-brief" class="lesson-brief">Welcome! Select a week to begin.</div>
+            <div id="lesson-list"></div>
         </aside>
 
         <main class="workspace">
             <div class="editor-section">
                 <div class="panel-header">
-                    <span>Editor (main.py)</span>
-                    <button id="run-btn" class="run-btn" disabled>Loading Python...</button>
+                    <span>Editor</span>
+                    <button id="run-btn" class="run-btn" disabled>Booting...</button>
                 </div>
-                <textarea id="editor" spellcheck="false"></textarea>
+                <textarea id="editor"></textarea>
             </div>
 
             <div class="terminal-section">
                 <div class="panel-header">
-                    <span>Terminal (stdout)</span>
+                    <span>Terminal</span>
                     <button id="clear-btn" class="clear-btn">Clear</button>
                 </div>
-                <pre id="terminal">Initializing Python Engine via WebAssembly...\nPlease wait...</pre>
+                <pre id="terminal" class="terminal">Initializing Environment...</pre>
             </div>
         </main>
     </div>
 
     <script>
-        // --- 8 Week Curriculum Data ---
+        // --- Curriculum Data ---
         const lessons = [
-            { week: 1, title: "Week 1: Variables", brief: "Variables store data. Use the '=' sign to assign a value to a name. Print the variable to see its contents.", code: "# Create a variable named 'greeting'\ngreeting = 'Hello, Python!'\n\n# Print it to the terminal\nprint(greeting)" },
-            { week: 2, title: "Week 2: Conditionals", brief: "Make decisions using 'if', 'elif', and 'else'. Indentation is crucial in Python to group code blocks.", code: "temperature = 75\n\nif temperature > 80:\n    print('It is hot outside.')\nelif temperature > 60:\n    print('The weather is pleasant.')\nelse:\n    print('It is cold.')" },
-            { week: 3, title: "Week 3: Loops", brief: "Use 'for' loops to iterate over a sequence, and 'while' loops to run as long as a condition is true.", code: "# A simple for loop\nprint('Counting to 3:')\nfor i in range(1, 4):\n    print(i)\n\nprint('\\nLiftoff sequence:')\ncountdown = 3\nwhile countdown > 0:\n    print(countdown)\n    countdown -= 1\nprint('Liftoff!')" },
-            { week: 4, title: "Week 4: Functions", brief: "Functions are reusable blocks of code. Define them using the 'def' keyword.", code: "def greet_user(name):\n    return f'Welcome to the system, {name}!'\n\nmessage = greet_user('Jordan')\nprint(message)" },
-            { week: 5, title: "Week 5: Lists", brief: "Lists store multiple items in a single variable. They are ordered and changeable.", code: "groceries = ['Apples', 'Bread', 'Milk']\nprint(f'Original list: {groceries}')\n\n# Add an item\ngroceries.append('Coffee')\nprint(f'Updated list: {groceries}')\n\n# Loop through the list\nprint('\\nShopping List:')\nfor item in groceries:\n    print(f'- {item}')" },
-            { week: 6, title: "Week 6: Dictionaries", brief: "Dictionaries store data in key-value pairs. Great for structured data.", code: "user_profile = {\n    'username': 'coder123',\n    'role': 'Admin',\n    'active': True\n}\n\nprint(f\"User: {user_profile['username']}\")\n\n# Add a new key\nuser_profile['last_login'] = 'Today'\nprint(user_profile)" },
-            { week: 7, title: "Week 7: Classes", brief: "Classes are blueprints for creating objects (Object-Oriented Programming).", code: "class Cat:\n    def __init__(self, name):\n        self.name = name\n\n    def meow(self):\n        print(f'{self.name} says: Meow!')\n\n# Create an instance\nmy_cat = Cat('Whiskers')\nmy_cat.meow()" },
-            { week: 8, title: "Week 8: Error Handling", brief: "Use try/except blocks to catch errors so your program doesn't crash.", code: "def divide(a, b):\n    try:\n        result = a / b\n        print(f'Result: {result}')\n    except ZeroDivisionError:\n        print('Error: You cannot divide by zero!')\n\ndivide(10, 2)\ndivide(10, 0)" }
+            { week: 1, title: "Week 1: Variables", brief: "Learn to store information. Use '=' to assign values.", code: "name = input('Enter your name: ')\nage = input('Enter your age: ')\nprint(f'Hello {name}, you are {age} years old!')" },
+            { week: 2, title: "Week 2: Conditionals", brief: "Use if/else to make choices.", code: "score = int(input('Enter your score (0-100): '))\nif score >= 90:\n    print('Grade: A')\nelif score >= 80:\n    print('Grade: B')\nelse:\n    print('Keep studying!')" },
+            { week: 3, title: "Week 3: Loops", brief: "Repeat tasks easily with 'for' or 'while'.", code: "count = int(input('How many times should I loop? '))\nfor i in range(count):\n    print(f'Loop number {i+1}')" },
+            { week: 4, title: "Week 4: Functions", brief: "Write reusable blocks of code.", code: "def square(number):\n    return number * number\n\nval = int(input('Enter a number to square: '))\nprint(f'Result: {square(val)}')" },
+            { week: 5, title: "Week 5: Lists", brief: "Store collections of items.", code: "items = ['Python', 'HTML', 'CSS']\nnew_item = input('Add a skill to the list: ')\nitems.append(new_item)\nprint(f'Your skills: {items}')" },
+            { week: 6, title: "Week 6: Dictionaries", brief: "Store data in key-value pairs.", code: "user = {'id': 1, 'name': 'Jordan'}\nkey = input('What do you want to know? (id/name): ')\nprint(user.get(key, 'Not found'))" },
+            { week: 7, title: "Week 7: Classes", brief: "Object-Oriented Programming basics.", code: "class Robot:\n    def __init__(self, name):\n        self.name = name\n    def speak(self):\n        print(f'I am {self.name}. Beep boop.')\n\nbot_name = input('Name your robot: ')\nmy_bot = Robot(bot_name)\nmy_bot.speak()" },
+            { week: 8, title: "Week 8: Project", brief: "Putting it all together.", code: "# Simple Calculator\na = float(input('First number: '))\nb = float(input('Second number: '))\nop = input('Operation (+, -): ')\nif op == '+':\n    print(f'Sum: {a + b}')\nelse:\n    print(f'Difference: {a - b}')" }
         ];
 
-        // --- State Variables ---
         let pyodideInstance = null;
         let isCourseMode = true;
         let activeWeek = 1;
 
-        // --- DOM Elements ---
+        // --- DOM & Editor Init ---
         const terminal = document.getElementById('terminal');
         const runBtn = document.getElementById('run-btn');
-        const clearBtn = document.getElementById('clear-btn');
-        const toggleBtn = document.getElementById('toggle-mode');
-        const sidebar = document.getElementById('sidebar');
-        const appTitle = document.getElementById('app-title');
-        const lessonList = document.getElementById('lesson-list');
-        const lessonBrief = document.getElementById('lesson-brief');
-        const editorElement = document.getElementById('editor');
-
-        // --- Initialize CodeMirror IDE ---
-        const cmEditor = CodeMirror.fromTextArea(editorElement, {
-            mode: "python",
-            lineNumbers: true,
-            matchBrackets: true,
-            autoCloseBrackets: true,
-            indentUnit: 4,
-            viewportMargin: Infinity
+        const cmEditor = CodeMirror.fromTextArea(document.getElementById('editor'), {
+            mode: "python", lineNumbers: true, matchBrackets: true,
+            autoCloseBrackets: true, indentUnit: 4, theme: "default"
         });
 
-        // --- Initialize WebAssembly Python ---
+        // --- The IO & Auto-Scroll Patch ---
+        const scrollObserver = new MutationObserver(() => {
+            terminal.scrollTop = terminal.scrollHeight;
+        });
+        scrollObserver.observe(terminal, { childList: true });
+
         async function initPyodide() {
             try {
                 pyodideInstance = await loadPyodide({
-                    stdout: (text) => { 
-                        terminal.innerHTML += `<span style="color:#e8e3d9">${text}</span>\n`; 
-                    },
-                    stderr: (text) => { 
-                        terminal.innerHTML += `<span class="term-error">${text}</span>\n`; 
-                    }
+                    stdout: (text) => { terminal.innerHTML += `<span>${text}</span>\n`; },
+                    stderr: (text) => { terminal.innerHTML += `<span class="term-error">${text}</span>\n`; }
                 });
                 
+                // CRITICAL: Input Patch - Overrides Python input() with Browser prompt()
+                await pyodideInstance.runPythonAsync(`
+                    import builtins
+                    import js
+                    def custom_input(prompt=""):
+                        return js.prompt(prompt)
+                    builtins.input = custom_input
+                `);
+
                 terminal.innerHTML = "<span class='term-success'>Python 3 Engine Ready.</span>\n---\n";
                 runBtn.textContent = "Run Code";
                 runBtn.disabled = false;
             } catch (err) {
-                terminal.innerHTML = `<span class="term-error">Failed to load Python Engine.\n${err}</span>`;
+                terminal.innerHTML = `<span class="term-error">Engine Error: ${err}</span>`;
             }
         }
 
-        // --- Run Python Code ---
         async function executeCode() {
             if (!pyodideInstance) return;
-            
-            // Get value from CodeMirror instead of raw textarea
             const code = cmEditor.getValue();
-            terminal.innerHTML += "<span style='color:#a0a0a0'>>>> Running...</span>\n";
+            terminal.innerHTML += "<span class='term-meta'>>>> Running Script...</span>\n";
             runBtn.disabled = true;
-            runBtn.textContent = "Executing...";
-            
             try {
                 await pyodideInstance.runPythonAsync(code);
             } catch (err) {
                 terminal.innerHTML += `<span class="term-error">${err}</span>\n`;
             }
-            
             runBtn.disabled = false;
-            runBtn.textContent = "Run Code";
-            terminal.scrollTop = terminal.scrollHeight;
         }
 
-        // --- Clear Terminal ---
-        function clearTerminal() {
-            terminal.innerHTML = "";
-        }
-
-        // --- UI Logic ---
-        function loadLesson(weekIndex) {
-            const lesson = lessons[weekIndex - 1];
-            activeWeek = weekIndex;
-            
-            lessonBrief.innerHTML = `<strong>${lesson.title}</strong><br>${lesson.brief}`;
-            
-            // Set CodeMirror value
-            cmEditor.setValue(lesson.code);
-            
-            // Reset terminal for the new lesson
-            if(pyodideInstance) {
-                terminal.innerHTML = "<span class='term-success'>Python 3 Engine Ready.</span>\n---\n";
-            }
-
-            document.querySelectorAll('.lesson-btn').forEach(btn => {
-                btn.classList.remove('active');
-                if (parseInt(btn.dataset.week) === weekIndex) {
-                    btn.classList.add('active');
-                }
-            });
-            
-            // Refresh editor to ensure it paints correctly
-            setTimeout(() => cmEditor.refresh(), 1);
-        }
-
-        function buildSidebar() {
-            lessons.forEach(lesson => {
-                const btn = document.createElement('button');
-                btn.className = 'lesson-btn';
-                btn.dataset.week = lesson.week;
-                btn.textContent = lesson.title;
-                btn.onclick = () => loadLesson(lesson.week);
-                lessonList.appendChild(btn);
-            });
-        }
-
-        function toggleMode() {
-            isCourseMode = !isCourseMode;
-            if (isCourseMode) {
-                sidebar.classList.remove('hidden');
-                appTitle.textContent = "Python Crash Course";
-                toggleBtn.textContent = "Switch to Sandbox";
-                loadLesson(activeWeek); 
-            } else {
-                sidebar.classList.add('hidden');
-                appTitle.textContent = "Python Sandbox";
-                toggleBtn.textContent = "Switch to Course";
-                lessonBrief.innerHTML = "";
-                cmEditor.setValue("# Sandbox Mode\n# Write whatever you want here!\n\nprint('Hello Sandbox')");
-                if(pyodideInstance) {
-                    terminal.innerHTML = "<span class='term-success'>Python 3 Engine Ready.</span>\n---\n";
-                }
-            }
-            // CodeMirror needs a refresh when its container size changes
-            setTimeout(() => cmEditor.refresh(), 10);
-        }
-
-        // --- Event Listeners ---
-        runBtn.addEventListener('click', executeCode);
-        clearBtn.addEventListener('click', clearTerminal);
-        toggleBtn.addEventListener('click', toggleMode);
-
-        // Run with Cmd/Ctrl + Enter inside CodeMirror
-        cmEditor.setOption("extraKeys", {
-            "Cmd-Enter": function(cm) { if (!runBtn.disabled) executeCode(); },
-            "Ctrl-Enter": function(cm) { if (!runBtn.disabled) executeCode(); }
+        // --- Persistence & UI Logic ---
+        cmEditor.on("change", () => {
+            if (!isCourseMode) localStorage.setItem('python_sandbox_code', cmEditor.getValue());
         });
 
-        // --- Startup ---
-        buildSidebar();
+        function loadLesson(weekIndex) {
+            activeWeek = weekIndex;
+            const lesson = lessons[weekIndex - 1];
+            document.getElementById('lesson-brief').innerHTML = `<strong>${lesson.title}</strong><br>${lesson.brief}`;
+            cmEditor.setValue(lesson.code);
+            document.querySelectorAll('.lesson-btn').forEach(btn => {
+                btn.classList.toggle('active', parseInt(btn.dataset.week) === weekIndex);
+            });
+            setTimeout(() => cmEditor.refresh(), 50);
+        }
+
+        document.getElementById('toggle-mode').onclick = () => {
+            isCourseMode = !isCourseMode;
+            document.getElementById('sidebar').classList.toggle('hidden');
+            document.getElementById('app-title').textContent = isCourseMode ? "Python Crash Course" : "Python Sandbox";
+            document.getElementById('toggle-mode').textContent = isCourseMode ? "Switch to Sandbox" : "Switch to Course";
+            
+            if (!isCourseMode) {
+                const saved = localStorage.getItem('python_sandbox_code');
+                cmEditor.setValue(saved || "# Welcome to your Sandbox\nprint('Ready to code!')");
+            } else {
+                loadLesson(activeWeek);
+            }
+            setTimeout(() => cmEditor.refresh(), 50);
+        };
+
+        document.getElementById('clear-btn').onclick = () => { terminal.innerHTML = ""; };
+        runBtn.onclick = executeCode;
+
+        // Startup
+        lessons.forEach(l => {
+            const b = document.createElement('button');
+            b.className = 'lesson-btn'; b.dataset.week = l.week; b.textContent = l.title;
+            b.onclick = () => loadLesson(l.week);
+            document.getElementById('lesson-list').appendChild(b);
+        });
         loadLesson(1);
         initPyodide();
     </script>
