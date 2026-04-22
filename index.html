@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Python Powerhouse: Crash Course & Sandbox</title>
+    <title>Python Mastery: The 8-Week Journey</title>
     
     <script src="https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
@@ -19,7 +19,7 @@
             --text-dark: #3b3a36;
             --text-light: #7a756b;
             --accent-green: #687a55;
-            --accent-green-hover: #546344;
+            --accent-green-light: #e9ede4;
             --oak-border: #a67c52; 
             --terminal-bg: #2d2c29;
             --terminal-text: #e8e3d9;
@@ -37,233 +37,258 @@
             overflow: hidden;
             background-color: var(--bg-color);
             background-image: 
-              linear-gradient(90deg, rgba(104, 122, 85, 0.03) 50%, transparent 50%),
-              linear-gradient(rgba(104, 122, 85, 0.03) 50%, transparent 50%);
+              linear-gradient(90deg, rgba(104, 122, 85, 0.04) 50%, transparent 50%),
+              linear-gradient(rgba(104, 122, 85, 0.04) 50%, transparent 50%);
             background-size: 30px 30px;
         }
 
         header {
             background-color: var(--accent-green);
             color: white;
-            padding: 0.8rem 1.2rem;
+            padding: 0.8rem 1.5rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            z-index: 10;
-            border-bottom: 3px solid var(--oak-border);
+            border-bottom: 4px solid var(--oak-border);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            z-index: 20;
         }
 
-        .toggle-btn {
-            background: rgba(255,255,255,0.2);
-            border: 1px solid rgba(255,255,255,0.4);
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
+        .header-title { display: flex; align-items: center; gap: 10px; }
+        .header-title h1 { font-size: 1.1rem; letter-spacing: 1px; }
 
         .container { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
         @media (min-width: 768px) { .container { flex-direction: row; } }
 
+        /* Sidebar & Progress Tracking */
         .sidebar {
-            background-color: rgba(242, 239, 228, 0.9);
-            padding: 1.2rem;
+            background-color: rgba(242, 239, 228, 0.95);
+            padding: 1.5rem;
             display: flex;
             flex-direction: column;
             gap: 1rem;
             overflow-y: auto;
-            border-bottom: 2px solid var(--oak-border);
-            backdrop-filter: blur(5px);
+            border-right: 2px solid var(--oak-border);
+            width: 340px;
+            backdrop-filter: blur(8px);
         }
-        @media (min-width: 768px) { .sidebar { width: 320px; border-bottom: none; border-right: 2px solid var(--oak-border); } }
-        .sidebar.hidden { display: none; }
+
+        .progress-box {
+            background: white;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--oak-border);
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-text { font-size: 0.8rem; font-weight: bold; color: var(--accent-green); margin-bottom: 5px; }
+        .progress-bar { height: 8px; background: #eee; border-radius: 4px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--accent-green); width: 0%; transition: width 0.5s; }
 
         .lesson-btn {
-            background: none; border: none; text-align: left; padding: 0.7rem; border-radius: 8px;
-            cursor: pointer; color: var(--text-dark); font-weight: 500; transition: all 0.2s;
+            background: white; border: 1px solid rgba(166, 124, 82, 0.2); text-align: left; 
+            padding: 0.8rem; border-radius: 10px; cursor: pointer; color: var(--text-dark); 
+            font-weight: 500; display: flex; justify-content: space-between; align-items: center;
+            transition: all 0.2s;
         }
-        .lesson-btn:hover { background: rgba(255,255,255,0.5); transform: translateX(3px); }
-        .lesson-btn.active { background: white; color: var(--accent-green); border-left: 4px solid var(--accent-green); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .lesson-btn:disabled { opacity: 0.6; cursor: not-allowed; background: #f0f0f0; }
+        .lesson-btn.active { border: 2px solid var(--accent-green); box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
+        .lesson-btn.completed::after { content: '✓'; color: var(--accent-green); font-weight: bold; }
+        .lesson-btn.locked::after { content: '🔒'; font-size: 0.8rem; }
 
-        .lesson-brief {
-            font-size: 0.9rem; color: var(--text-light); line-height: 1.5; background: white;
-            padding: 1rem; border-radius: var(--border-radius); border: 1px solid rgba(166,124,82,0.2);
+        /* Workspace Layout */
+        .workspace { display: flex; flex-direction: column; flex: 1; padding: 1.5rem; gap: 1.5rem; overflow-y: auto; }
+
+        .objective-card {
+            background: var(--accent-green-light);
+            border-left: 5px solid var(--accent-green);
+            padding: 1.2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
         }
+        .objective-card h3 { font-size: 0.9rem; color: var(--accent-green); margin-bottom: 5px; text-transform: uppercase; }
+        .objective-card p { font-size: 1rem; line-height: 1.4; color: var(--text-dark); }
 
-        .workspace { display: flex; flex-direction: column; flex: 1; padding: 1rem; gap: 1rem; min-height: 0; }
-        .editor-section, .terminal-section {
-            display: flex; flex-direction: column; flex: 1; border-radius: var(--border-radius);
-            overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border: 1px solid rgba(166,124,82,0.3);
-            background: white; min-height: 0; /* Critical for internal scrolling */
+        .editor-container {
+            display: flex; flex-direction: column; height: 400px; 
+            border: 2px solid var(--oak-border); border-radius: var(--border-radius); 
+            background: white; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.05);
         }
 
         .panel-header {
-            background-color: #f4f0e6; padding: 0.6rem 1rem; font-size: 0.8rem; font-weight: 700;
-            color: var(--text-dark); display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid rgba(166,124,82,0.2); text-transform: uppercase; letter-spacing: 0.5px;
+            background: #f4f0e6; padding: 0.8rem 1.2rem; display: flex; justify-content: space-between;
+            align-items: center; border-bottom: 1px solid rgba(166,124,82,0.2);
         }
 
-        .run-btn { background-color: var(--accent-green); color: white; border: none; padding: 0.4rem 1.2rem; border-radius: 20px; cursor: pointer; font-weight: bold; }
-        .clear-btn { background: transparent; border: 1px solid #ccc; color: #777; padding: 0.2rem 0.8rem; border-radius: 12px; cursor: pointer; font-size: 0.7rem; }
+        .action-btns { display: flex; gap: 10px; }
+        .btn { border: none; padding: 0.5rem 1.2rem; border-radius: 20px; cursor: pointer; font-weight: 700; font-size: 0.8rem; transition: transform 0.1s; }
+        .btn-run { background: white; color: var(--text-dark); border: 1px solid var(--text-light); }
+        .btn-submit { background: var(--accent-green); color: white; }
+        .btn:active { transform: scale(0.95); }
+        .btn:disabled { background: #ccc; cursor: not-allowed; }
 
-        .CodeMirror { flex: 1; height: 100%; font-family: "Courier New", monospace; font-size: 15px; }
-        
-        .terminal {
-            flex: 1; background-color: var(--terminal-bg); color: var(--terminal-text);
-            padding: 1rem; font-family: "Courier New", monospace; font-size: 14px;
-            overflow-y: auto; white-space: pre-wrap; margin: 0; line-height: 1.5;
+        .terminal-container {
+            height: 200px; background: var(--terminal-bg); border-radius: var(--border-radius);
+            display: flex; flex-direction: column; overflow: hidden; border: 2px solid var(--oak-border);
         }
-        .term-error { color: #ffab91; font-weight: bold; }
-        .term-success { color: #c5e1a5; }
-        .term-meta { color: #90a4ae; font-style: italic; }
+        .terminal { flex: 1; padding: 1rem; color: var(--terminal-text); font-family: 'Courier New', monospace; overflow-y: auto; white-space: pre-wrap; font-size: 14px; }
+        .term-err { color: #ffab91; }
+        .term-success { color: #c5e1a5; font-weight: bold; }
+
     </style>
 </head>
 <body>
 
     <header>
-        <h1 id="app-title">Python Crash Course</h1>
-        <button id="toggle-mode" class="toggle-btn">Switch to Sandbox</button>
+        <div class="header-title">
+            <h1>PYTHON MASTERY</h1>
+        </div>
+        <div id="status-chip" style="font-size: 0.8rem; background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 15px;">Booting System...</div>
     </header>
 
     <div class="container">
-        <aside id="sidebar" class="sidebar">
-            <div id="lesson-brief" class="lesson-brief">Welcome! Select a week to begin.</div>
-            <div id="lesson-list"></div>
+        <aside class="sidebar">
+            <div class="progress-box">
+                <div class="progress-text">COURSE PROGRESS: <span id="progress-pct">0%</span></div>
+                <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
+            </div>
+            <div id="lesson-list" style="display: flex; flex-direction: column; gap: 0.8rem;"></div>
+            <button id="reset-progress" style="margin-top: auto; background: none; border: none; color: #a67c52; font-size: 0.7rem; cursor: pointer; text-decoration: underline;">Reset All Progress</button>
         </aside>
 
         <main class="workspace">
-            <div class="editor-section">
+            <div id="objective-panel" class="objective-card">
+                <h3>Challenge Objective</h3>
+                <p id="objective-text">Select a lesson to begin your journey.</p>
+                <button id="hint-btn" style="margin-top: 10px; background: none; border: 1px solid var(--accent-green); color: var(--accent-green); padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; cursor: pointer;">Need a Hint?</button>
+            </div>
+
+            <div class="editor-container">
                 <div class="panel-header">
-                    <span>Editor</span>
-                    <button id="run-btn" class="run-btn" disabled>Booting...</button>
+                    <span style="font-weight: bold; font-size: 0.7rem; color: var(--text-light);">PYTHON 3.10 EDITOR</span>
+                    <div class="action-btns">
+                        <button id="run-btn" class="btn btn-run" disabled>Run</button>
+                        <button id="submit-btn" class="btn btn-submit" disabled>Submit Challenge</button>
+                    </div>
                 </div>
                 <textarea id="editor"></textarea>
             </div>
 
-            <div class="terminal-section">
-                <div class="panel-header">
-                    <span>Terminal</span>
-                    <button id="clear-btn" class="clear-btn">Clear</button>
+            <div class="terminal-container">
+                <div class="panel-header" style="background: #333; color: #aaa; border: none;">
+                    <span style="font-size: 0.7rem;">OUTPUT CONSOLE</span>
+                    <button id="clear-term" style="background: none; border: none; color: #888; font-size: 0.7rem; cursor: pointer;">Clear</button>
                 </div>
-                <pre id="terminal" class="terminal">Initializing Environment...</pre>
+                <div id="terminal" class="terminal">Initializing...</div>
             </div>
         </main>
     </div>
 
     <script>
-        // --- Curriculum Data ---
         const lessons = [
-            { week: 1, title: "Week 1: Variables", brief: "Learn to store information. Use '=' to assign values.", code: "name = input('Enter your name: ')\nage = input('Enter your age: ')\nprint(f'Hello {name}, you are {age} years old!')" },
-            { week: 2, title: "Week 2: Conditionals", brief: "Use if/else to make choices.", code: "score = int(input('Enter your score (0-100): '))\nif score >= 90:\n    print('Grade: A')\nelif score >= 80:\n    print('Grade: B')\nelse:\n    print('Keep studying!')" },
-            { week: 3, title: "Week 3: Loops", brief: "Repeat tasks easily with 'for' or 'while'.", code: "count = int(input('How many times should I loop? '))\nfor i in range(count):\n    print(f'Loop number {i+1}')" },
-            { week: 4, title: "Week 4: Functions", brief: "Write reusable blocks of code.", code: "def square(number):\n    return number * number\n\nval = int(input('Enter a number to square: '))\nprint(f'Result: {square(val)}')" },
-            { week: 5, title: "Week 5: Lists", brief: "Store collections of items.", code: "items = ['Python', 'HTML', 'CSS']\nnew_item = input('Add a skill to the list: ')\nitems.append(new_item)\nprint(f'Your skills: {items}')" },
-            { week: 6, title: "Week 6: Dictionaries", brief: "Store data in key-value pairs.", code: "user = {'id': 1, 'name': 'Jordan'}\nkey = input('What do you want to know? (id/name): ')\nprint(user.get(key, 'Not found'))" },
-            { week: 7, title: "Week 7: Classes", brief: "Object-Oriented Programming basics.", code: "class Robot:\n    def __init__(self, name):\n        self.name = name\n    def speak(self):\n        print(f'I am {self.name}. Beep boop.')\n\nbot_name = input('Name your robot: ')\nmy_bot = Robot(bot_name)\nmy_bot.speak()" },
-            { week: 8, title: "Week 8: Project", brief: "Putting it all together.", code: "# Simple Calculator\na = float(input('First number: '))\nb = float(input('Second number: '))\nop = input('Operation (+, -): ')\nif op == '+':\n    print(f'Sum: {a + b}')\nelse:\n    print(f'Difference: {a - b}')" }
+            { week: 1, title: "The Variable", objective: "Create a variable named 'points' and set it to the integer 100.", hint: "Type: points = 100", startCode: "# Your code here\n", test: "assert 'points' in locals(), 'Did you name the variable points?'\nassert points == 100, 'The value should be exactly 100.'" },
+            { week: 2, title: "Dynamic Input", objective: "Ask the user for their name using input() and store it in a variable called 'user_name'.", hint: "user_name = input('Name? ')", startCode: "", test: "assert 'user_name' in locals(), 'Store the result in user_name'\nassert len(user_name) > 0, 'Enter something into the prompt!'" },
+            { week: 3, title: "The Condition", objective: "Create a variable 'age'. If age is 18 or more, print 'Adult'. Otherwise, print 'Minor'.", hint: "Use if age >= 18:", startCode: "age = 20\n", test: "assert 'age' in locals()\n# Tests logic via capture" },
+            { week: 4, title: "List Mastery", objective: "Create a list named 'fruits' containing 'apple' and 'pear'. Add 'orange' to it using .append().", hint: "fruits.append('orange')", startCode: "fruits = ['apple', 'pear']\n", test: "assert 'orange' in fruits, 'Did you append orange?'" },
+            { week: 5, title: "Looping Logic", objective: "Use a for loop to print the numbers 0, 1, and 2.", hint: "for i in range(3):", startCode: "", test: "" },
+            { week: 6, title: "Functional Power", objective: "Define a function 'add' that takes two numbers and returns their sum.", hint: "def add(a, b): return a + b", startCode: "", test: "assert add(5,5) == 10" },
+            { week: 7, title: "The Class", objective: "Create a class 'Pet' with an __init__ method that sets a 'name' attribute.", hint: "self.name = name", startCode: "", test: "p = Pet('Rex'); assert p.name == 'Rex'" },
+            { week: 8, title: "Final Boss", objective: "Write a program that takes a number input and prints 'Even' or 'Odd'.", hint: "Use num % 2 == 0", startCode: "", test: "" }
         ];
 
-        let pyodideInstance = null;
-        let isCourseMode = true;
-        let activeWeek = 1;
+        let pyodide = null;
+        let currentWeek = 1;
+        let unlockedWeeks = JSON.parse(localStorage.getItem('python_mastery_unlocked')) || [1];
+        let completedWeeks = JSON.parse(localStorage.getItem('python_mastery_completed')) || [];
 
-        // --- DOM & Editor Init ---
         const terminal = document.getElementById('terminal');
-        const runBtn = document.getElementById('run-btn');
         const cmEditor = CodeMirror.fromTextArea(document.getElementById('editor'), {
-            mode: "python", lineNumbers: true, matchBrackets: true,
-            autoCloseBrackets: true, indentUnit: 4, theme: "default"
+            mode: "python", lineNumbers: true, matchBrackets: true, autoCloseBrackets: true, indentUnit: 4
         });
 
-        // --- The IO & Auto-Scroll Patch ---
-        const scrollObserver = new MutationObserver(() => {
-            terminal.scrollTop = terminal.scrollHeight;
-        });
-        scrollObserver.observe(terminal, { childList: true });
+        // Auto-scroll terminal
+        new MutationObserver(() => { terminal.scrollTop = terminal.scrollHeight; }).observe(terminal, { childList: true });
 
-        async function initPyodide() {
+        async function init() {
             try {
-                pyodideInstance = await loadPyodide({
-                    stdout: (text) => { terminal.innerHTML += `<span>${text}</span>\n`; },
-                    stderr: (text) => { terminal.innerHTML += `<span class="term-error">${text}</span>\n`; }
+                pyodide = await loadPyodide({
+                    stdout: (t) => terminal.innerHTML += `<span>${t}</span>\n`,
+                    stderr: (t) => terminal.innerHTML += `<span class="term-err">${t}</span>\n`
                 });
+                // Patch Input
+                await pyodide.runPythonAsync(`import builtins, js\ndef custom_input(p=''): return js.prompt(p)\nbuiltins.input = custom_input`);
                 
-                // CRITICAL: Input Patch - Overrides Python input() with Browser prompt()
-                await pyodideInstance.runPythonAsync(`
-                    import builtins
-                    import js
-                    def custom_input(prompt=""):
-                        return js.prompt(prompt)
-                    builtins.input = custom_input
-                `);
-
-                terminal.innerHTML = "<span class='term-success'>Python 3 Engine Ready.</span>\n---\n";
-                runBtn.textContent = "Run Code";
-                runBtn.disabled = false;
-            } catch (err) {
-                terminal.innerHTML = `<span class="term-error">Engine Error: ${err}</span>`;
-            }
+                terminal.innerHTML = "<span class='term-success'>System Online. Welcome, Developer.</span>\n---\n";
+                document.getElementById('status-chip').textContent = "Engine Ready";
+                document.getElementById('run-btn').disabled = false;
+                document.getElementById('submit-btn').disabled = false;
+                renderLessons();
+                loadWeek(unlockedWeeks[unlockedWeeks.length - 1]);
+            } catch (e) { terminal.innerHTML = "Error booting engine."; }
         }
 
-        async function executeCode() {
-            if (!pyodideInstance) return;
-            const code = cmEditor.getValue();
-            terminal.innerHTML += "<span class='term-meta'>>>> Running Script...</span>\n";
-            runBtn.disabled = true;
-            try {
-                await pyodideInstance.runPythonAsync(code);
-            } catch (err) {
-                terminal.innerHTML += `<span class="term-error">${err}</span>\n`;
-            }
-            runBtn.disabled = false;
-        }
-
-        // --- Persistence & UI Logic ---
-        cmEditor.on("change", () => {
-            if (!isCourseMode) localStorage.setItem('python_sandbox_code', cmEditor.getValue());
-        });
-
-        function loadLesson(weekIndex) {
-            activeWeek = weekIndex;
-            const lesson = lessons[weekIndex - 1];
-            document.getElementById('lesson-brief').innerHTML = `<strong>${lesson.title}</strong><br>${lesson.brief}`;
-            cmEditor.setValue(lesson.code);
-            document.querySelectorAll('.lesson-btn').forEach(btn => {
-                btn.classList.toggle('active', parseInt(btn.dataset.week) === weekIndex);
+        function renderLessons() {
+            const list = document.getElementById('lesson-list');
+            list.innerHTML = '';
+            lessons.forEach(l => {
+                const isUnlocked = unlockedWeeks.includes(l.week);
+                const isCompleted = completedWeeks.includes(l.week);
+                const btn = document.createElement('button');
+                btn.className = `lesson-btn ${isCompleted ? 'completed' : ''} ${!isUnlocked ? 'locked' : ''} ${currentWeek === l.week ? 'active' : ''}`;
+                btn.disabled = !isUnlocked;
+                btn.innerHTML = `<span>Week ${l.week}: ${l.title}</span>`;
+                btn.onclick = () => loadWeek(l.week);
+                list.appendChild(btn);
             });
-            setTimeout(() => cmEditor.refresh(), 50);
+            const pct = Math.round((completedWeeks.length / lessons.length) * 100);
+            document.getElementById('progress-pct').textContent = pct + '%';
+            document.getElementById('progress-fill').style.width = pct + '%';
         }
 
-        document.getElementById('toggle-mode').onclick = () => {
-            isCourseMode = !isCourseMode;
-            document.getElementById('sidebar').classList.toggle('hidden');
-            document.getElementById('app-title').textContent = isCourseMode ? "Python Crash Course" : "Python Sandbox";
-            document.getElementById('toggle-mode').textContent = isCourseMode ? "Switch to Sandbox" : "Switch to Course";
-            
-            if (!isCourseMode) {
-                const saved = localStorage.getItem('python_sandbox_code');
-                cmEditor.setValue(saved || "# Welcome to your Sandbox\nprint('Ready to code!')");
-            } else {
-                loadLesson(activeWeek);
+        function loadWeek(w) {
+            currentWeek = w;
+            const lesson = lessons[w-1];
+            document.getElementById('objective-text').textContent = lesson.objective;
+            cmEditor.setValue(lesson.startCode);
+            renderLessons();
+        }
+
+        async function runCode() {
+            terminal.innerHTML += `<span style="color:#888">>> Executing...</span>\n`;
+            try { await pyodide.runPythonAsync(cmEditor.getValue()); } catch (e) { terminal.innerHTML += `<span class="term-err">${e}</span>\n`; }
+        }
+
+        async function submitChallenge() {
+            await runCode();
+            const lesson = lessons[currentWeek-1];
+            if (!lesson.test) {
+                markComplete();
+                return;
             }
-            setTimeout(() => cmEditor.refresh(), 50);
-        };
+            try {
+                await pyodide.runPythonAsync(cmEditor.getValue() + "\n" + lesson.test);
+                terminal.innerHTML += `<span class="term-success">CRITICAL SUCCESS: Challenge Mastered!</span>\n`;
+                markComplete();
+            } catch (e) {
+                terminal.innerHTML += `<span class="term-err">VALIDATION FAILED: ${e.message.split('AssertionError: ')[1] || 'Logic check failed.'}</span>\n`;
+            }
+        }
 
-        document.getElementById('clear-btn').onclick = () => { terminal.innerHTML = ""; };
-        runBtn.onclick = executeCode;
+        function markComplete() {
+            if (!completedWeeks.includes(currentWeek)) completedWeeks.push(currentWeek);
+            if (currentWeek < lessons.length && !unlockedWeeks.includes(currentWeek + 1)) unlockedWeeks.push(currentWeek + 1);
+            localStorage.setItem('python_mastery_completed', JSON.stringify(completedWeeks));
+            localStorage.setItem('python_mastery_unlocked', JSON.stringify(unlockedWeeks));
+            renderLessons();
+        }
 
-        // Startup
-        lessons.forEach(l => {
-            const b = document.createElement('button');
-            b.className = 'lesson-btn'; b.dataset.week = l.week; b.textContent = l.title;
-            b.onclick = () => loadLesson(l.week);
-            document.getElementById('lesson-list').appendChild(b);
-        });
-        loadLesson(1);
-        initPyodide();
+        document.getElementById('run-btn').onclick = runCode;
+        document.getElementById('submit-btn').onclick = submitChallenge;
+        document.getElementById('clear-term').onclick = () => terminal.innerHTML = "";
+        document.getElementById('hint-btn').onclick = () => alert(lessons[currentWeek-1].hint);
+        document.getElementById('reset-progress').onclick = () => { localStorage.clear(); location.reload(); };
+
+        init();
     </script>
 </body>
 </html>
