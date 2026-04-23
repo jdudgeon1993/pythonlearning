@@ -1,294 +1,1641 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Python Powerhouse Pro: Ultimate IDE</title>
-    
-    <script src="https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/python/python.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/edit/closebrackets.min.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PYTHON DOJO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
+<style>
+:root {
+  --bg-void: #050810;
+  --bg-dark: #080d1a;
+  --bg-panel: #0a1020;
+  --bg-card: #0d1428;
+  --bg-hover: #111830;
+  --cyan: #00f5ff;
+  --cyan-dim: #00bfcc;
+  --cyan-glow: rgba(0,245,255,0.15);
+  --cyan-deep: rgba(0,245,255,0.05);
+  --green: #39ff14;
+  --green-dim: #2acc0f;
+  --green-glow: rgba(57,255,20,0.12);
+  --amber: #ffaa00;
+  --amber-dim: #cc8800;
+  --red: #ff3366;
+  --purple: #9d4edd;
+  --text-primary: #e0f0ff;
+  --text-secondary: #7a9ab8;
+  --text-muted: #3d5a75;
+  --border: rgba(0,245,255,0.12);
+  --border-bright: rgba(0,245,255,0.3);
+  --mono: 'Share Tech Mono', monospace;
+  --display: 'Orbitron', monospace;
+  --body: 'Rajdhani', sans-serif;
+  --sidebar-w: 260px;
+  --header-h: 56px;
+  --bottom-h: 60px;
+}
 
-    <style>
-        :root {
-            --bg: #fdfaf6; --surface: #f2efe4; --text: #3b3a36; --light: #7a756b;
-            --green: #687a55; --green-soft: #e9ede4; --oak: #a67c52; 
-            --term-bg: #2d2c29; --term-text: #e8e3d9; --radius: 12px;
-        }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: system-ui, sans-serif; color: var(--text); background-color: var(--bg);
-            height: 100vh; display: flex; flex-direction: column; overflow: hidden;
-            background-image: linear-gradient(90deg, rgba(104,122,85,0.03) 50%, transparent 50%),
-                              linear-gradient(rgba(104,122,85,0.03) 50%, transparent 50%);
-            background-size: 20px 20px;
-        }
+html, body {
+  height: 100%;
+  background: var(--bg-void);
+  color: var(--text-primary);
+  font-family: var(--body);
+  font-size: 16px;
+  overflow: hidden;
+}
 
-        /* Header */
-        header {
-            background: var(--green); color: white; padding: 0.7rem 1.5rem;
-            display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 4px solid var(--oak); z-index: 100;
-        }
-        .mode-toggle { background: rgba(255,255,255,0.2); border: 1px solid white; color: white; padding: 4px 12px; border-radius: 20px; cursor: pointer; font-size: 0.8rem; font-weight: bold; }
+/* ===== LOADING SCREEN ===== */
+#loading-screen {
+  position: fixed; inset: 0; z-index: 9999;
+  background: var(--bg-void);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 32px;
+}
+.load-logo {
+  font-family: var(--display);
+  font-size: clamp(28px, 5vw, 48px);
+  font-weight: 900;
+  color: var(--cyan);
+  letter-spacing: 8px;
+  text-shadow: 0 0 30px var(--cyan), 0 0 60px rgba(0,245,255,0.3);
+  animation: pulse-logo 2s ease-in-out infinite;
+}
+@keyframes pulse-logo {
+  0%,100% { opacity: 1; text-shadow: 0 0 30px var(--cyan), 0 0 60px rgba(0,245,255,0.3); }
+  50% { opacity: 0.7; text-shadow: 0 0 15px var(--cyan); }
+}
+.load-sub {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--text-secondary);
+  letter-spacing: 3px;
+}
+.load-bar-wrap {
+  width: min(400px, 80vw);
+  height: 2px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.load-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--cyan), var(--green));
+  border-radius: 2px;
+  width: 0%;
+  transition: width 0.3s ease;
+  box-shadow: 0 0 8px var(--cyan);
+}
+.load-status {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--green);
+  letter-spacing: 2px;
+  min-height: 16px;
+}
+.load-dots::after {
+  content: '';
+  animation: dots 1.5s steps(4, end) infinite;
+}
+@keyframes dots {
+  0%  { content: ''; }
+  25% { content: '.'; }
+  50% { content: '..'; }
+  75% { content: '...'; }
+}
 
-        /* Layout Main */
-        .main-container { display: flex; flex: 1; overflow: hidden; }
+/* ===== SCANLINE OVERLAY ===== */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 9000;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+  pointer-events: none;
+}
 
-        /* Sidebars */
-        .sidebar { width: 280px; background: rgba(242,239,228,0.95); border-right: 2px solid var(--oak); display: flex; flex-direction: column; padding: 1rem; gap: 1rem; overflow-y: auto; }
-        .sidebar-right { width: 300px; border-right: none; border-left: 2px solid var(--oak); }
+/* ===== MAIN LAYOUT ===== */
+#app { display: none; height: 100vh; flex-direction: column; }
+#app.ready { display: flex; }
 
-        .card { background: white; border: 1px solid var(--oak); border-radius: 8px; padding: 0.8rem; margin-bottom: 0.5rem; }
-        .card-h { font-size: 0.7rem; font-weight: 800; color: var(--green); margin-bottom: 5px; text-transform: uppercase; }
+.app-header {
+  height: var(--header-h);
+  background: var(--bg-dark);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center;
+  padding: 0 16px; gap: 16px;
+  flex-shrink: 0;
+  position: relative;
+}
+.header-logo {
+  font-family: var(--display);
+  font-size: 14px;
+  font-weight: 900;
+  color: var(--cyan);
+  letter-spacing: 4px;
+  text-shadow: 0 0 12px var(--cyan);
+  white-space: nowrap;
+}
+.header-logo span { color: var(--green); text-shadow: 0 0 12px var(--green); }
+.header-version {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 2px;
+  background: var(--bg-panel);
+  padding: 2px 8px;
+  border-radius: 2px;
+  border: 1px solid var(--border);
+}
+.header-spacer { flex: 1; }
+.header-status {
+  font-family: var(--mono);
+  font-size: 11px;
+  display: flex; align-items: center; gap: 6px;
+}
+.status-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 6px var(--green);
+  animation: blink-dot 3s ease-in-out infinite;
+}
+@keyframes blink-dot { 0%,90%,100%{opacity:1} 95%{opacity:0.2} }
+.header-progress-mini {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--cyan-dim);
+  padding: 3px 10px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  background: var(--cyan-deep);
+}
 
-        /* Editor Area */
-        .editor-wrap { flex: 1; display: flex; flex-direction: column; padding: 1rem; gap: 1rem; min-width: 0; }
-        .ide-box { flex: 1; border: 2px solid var(--oak); border-radius: var(--radius); background: white; display: flex; flex-direction: column; overflow: hidden; }
-        .CodeMirror { flex: 1; height: 100%; font-size: 14px; }
+.app-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
 
-        /* Components */
-        .btn { padding: 6px 15px; border-radius: 20px; border: none; cursor: pointer; font-weight: bold; font-size: 0.8rem; }
-        .btn-primary { background: var(--green); color: white; }
-        .btn-ghost { background: transparent; border: 1px solid #ccc; color: var(--light); }
+/* ===== SIDEBAR ===== */
+.sidebar {
+  width: var(--sidebar-w);
+  background: var(--bg-dark);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  flex-shrink: 0;
+  overflow: hidden;
+  transition: transform 0.3s ease, width 0.3s ease;
+}
+.sidebar-nav {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.nav-tab {
+  flex: 1; padding: 12px 4px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-align: center;
+  color: var(--text-muted);
+  cursor: pointer;
+  border: none; background: none;
+  transition: all 0.2s;
+  border-bottom: 2px solid transparent;
+}
+.nav-tab:hover { color: var(--cyan); background: var(--cyan-deep); }
+.nav-tab.active { color: var(--cyan); border-bottom-color: var(--cyan); background: var(--cyan-deep); }
 
-        .nav-item { padding: 8px; cursor: pointer; border-radius: 6px; font-size: 0.9rem; transition: 0.2s; display: flex; justify-content: space-between; }
-        .nav-item:hover { background: var(--green-soft); }
-        .nav-item.active { background: white; border-left: 4px solid var(--green); font-weight: bold; }
+.sidebar-content { flex: 1; overflow-y: auto; }
+.sidebar-content::-webkit-scrollbar { width: 3px; }
+.sidebar-content::-webkit-scrollbar-track { background: transparent; }
+.sidebar-content::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 2px; }
 
-        .terminal { height: 180px; background: var(--term-bg); color: var(--term-text); padding: 1rem; font-family: monospace; overflow-y: auto; border-radius: var(--radius); border: 2px solid var(--oak); font-size: 13px; white-space: pre-wrap; }
+/* ===== MODULE LIST ===== */
+.module-section { padding: 8px 0; }
+.module-header {
+  padding: 10px 16px 6px;
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--text-muted);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  display: flex; align-items: center; gap: 8px;
+}
+.module-header::after {
+  content: '';
+  flex: 1; height: 1px;
+  background: var(--border);
+}
+.module-item {
+  padding: 0;
+}
+.module-toggle {
+  width: 100%;
+  padding: 8px 16px;
+  display: flex; align-items: center; gap: 10px;
+  cursor: pointer;
+  background: none; border: none;
+  color: var(--text-primary);
+  font-family: var(--body);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-align: left;
+  transition: all 0.2s;
+}
+.module-toggle:hover { background: var(--bg-hover); color: var(--cyan); }
+.module-toggle.active { color: var(--cyan); }
+.module-icon { font-size: 14px; width: 20px; text-align: center; }
+.module-chevron {
+  margin-left: auto;
+  font-size: 10px;
+  color: var(--text-muted);
+  transition: transform 0.2s;
+}
+.module-toggle.open .module-chevron { transform: rotate(90deg); }
+.module-progress-bar {
+  flex-shrink: 0;
+  width: 28px; height: 3px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.module-progress-bar-fill {
+  height: 100%;
+  background: var(--green);
+  box-shadow: 0 0 4px var(--green);
+  transition: width 0.5s ease;
+}
 
-        /* Inspector & Search */
-        .inspector-row { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #eee; font-size: 0.8rem; }
-        .var-name { color: var(--green); font-family: monospace; }
-        .search-box { width: 100%; padding: 5px; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 10px; }
+.lesson-list { overflow: hidden; }
+.lesson-item {
+  padding: 7px 16px 7px 46px;
+  cursor: pointer;
+  display: flex; align-items: center; gap: 10px;
+  font-family: var(--body);
+  font-size: 13px;
+  color: var(--text-secondary);
+  transition: all 0.2s;
+  border-left: 2px solid transparent;
+  position: relative;
+}
+.lesson-item:hover { background: var(--bg-hover); color: var(--text-primary); border-left-color: var(--border-bright); }
+.lesson-item.active { background: var(--cyan-deep); color: var(--cyan); border-left-color: var(--cyan); }
+.lesson-item.completed { color: var(--green-dim); }
+.lesson-item.completed .lesson-check { color: var(--green); }
+.lesson-check { font-size: 11px; flex-shrink: 0; width: 14px; }
 
-        .hidden { display: none !important; }
-    </style>
+/* ===== SANDBOX NAV ITEM ===== */
+.sandbox-nav-item {
+  margin: 12px;
+  padding: 10px 14px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex; align-items: center; gap: 10px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text-secondary);
+  transition: all 0.2s;
+}
+.sandbox-nav-item:hover, .sandbox-nav-item.active {
+  border-color: var(--green);
+  color: var(--green);
+  background: var(--green-glow);
+  box-shadow: 0 0 12px rgba(57,255,20,0.08);
+}
+
+/* ===== MAIN CONTENT ===== */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--bg-void);
+}
+
+/* ===== LESSON VIEW ===== */
+.lesson-view {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+.lesson-doc {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+  padding: 28px 32px;
+  background: var(--bg-void);
+}
+.lesson-doc::-webkit-scrollbar { width: 4px; }
+.lesson-doc::-webkit-scrollbar-track { background: transparent; }
+.lesson-doc::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+.lesson-breadcrumb {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 2px;
+  margin-bottom: 20px;
+}
+.lesson-breadcrumb span { color: var(--cyan-dim); }
+
+.lesson-title {
+  font-family: var(--display);
+  font-size: clamp(18px, 3vw, 26px);
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+  line-height: 1.3;
+}
+.lesson-subtitle {
+  font-family: var(--body);
+  font-size: 15px;
+  color: var(--text-secondary);
+  margin-bottom: 28px;
+  line-height: 1.6;
+  font-weight: 300;
+}
+.lesson-section {
+  margin-bottom: 28px;
+}
+.lesson-section h3 {
+  font-family: var(--display);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--cyan);
+  letter-spacing: 3px;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  display: flex; align-items: center; gap: 10px;
+}
+.lesson-section h3::after {
+  content: '';
+  flex: 1; height: 1px;
+  background: var(--border);
+}
+.lesson-section p {
+  font-family: var(--body);
+  font-size: 15px;
+  line-height: 1.8;
+  color: var(--text-secondary);
+  margin-bottom: 14px;
+  font-weight: 400;
+}
+.lesson-section p strong { color: var(--cyan); font-weight: 600; }
+.lesson-section p code {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--amber);
+  background: var(--bg-card);
+  padding: 1px 6px;
+  border-radius: 2px;
+  border: 1px solid var(--border);
+}
+
+.concept-block {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--cyan);
+  border-radius: 4px;
+  padding: 16px 20px;
+  margin: 16px 0;
+  font-family: var(--body);
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+.concept-block strong { color: var(--cyan); }
+
+.info-block {
+  background: rgba(255,170,0,0.05);
+  border: 1px solid rgba(255,170,0,0.2);
+  border-left: 3px solid var(--amber);
+  border-radius: 4px;
+  padding: 14px 18px;
+  margin: 16px 0;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--amber-dim);
+  line-height: 1.7;
+}
+.info-block .info-label {
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--amber);
+  margin-bottom: 6px;
+}
+
+.example-code {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  margin: 14px 0;
+  overflow: hidden;
+}
+.example-code-header {
+  padding: 8px 14px;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 2px;
+  display: flex; align-items: center; gap: 8px;
+}
+.example-code-header .dot { width: 8px; height: 8px; border-radius: 50%; }
+.dot-r { background: #ff5f57; }
+.dot-y { background: #febc2e; }
+.dot-g { background: #28c840; }
+.load-to-editor-btn {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--cyan-dim);
+  background: none;
+  border: 1px solid var(--border);
+  padding: 2px 10px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 1px;
+}
+.load-to-editor-btn:hover { border-color: var(--cyan); color: var(--cyan); background: var(--cyan-deep); }
+.example-code pre {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--text-primary);
+  padding: 16px;
+  overflow-x: auto;
+  line-height: 1.6;
+}
+.example-code pre .kw  { color: #c792ea; }
+.example-code pre .str { color: #c3e88d; }
+.example-code pre .num { color: #f78c6c; }
+.example-code pre .fn  { color: #82aaff; }
+.example-code pre .cmt { color: #546e7a; font-style: italic; }
+.example-code pre .var { color: var(--cyan); }
+
+.lesson-nav-buttons {
+  display: flex; gap: 12px; margin-top: 32px; padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+.lesson-nav-btn {
+  padding: 10px 20px;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 2px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid var(--border);
+  background: var(--bg-panel);
+  color: var(--text-secondary);
+}
+.lesson-nav-btn:hover { border-color: var(--cyan-dim); color: var(--cyan); background: var(--cyan-deep); }
+.lesson-nav-btn.primary {
+  background: var(--cyan-deep);
+  border-color: var(--cyan);
+  color: var(--cyan);
+  box-shadow: 0 0 12px var(--cyan-glow);
+}
+.lesson-nav-btn.primary:hover {
+  background: rgba(0,245,255,0.12);
+  box-shadow: 0 0 20px var(--cyan-glow);
+}
+.lesson-nav-btn.complete {
+  background: var(--green-glow);
+  border-color: var(--green);
+  color: var(--green);
+}
+.spacer-auto { flex: 1; }
+
+/* ===== EDITOR PANEL ===== */
+.editor-panel {
+  width: 42%;
+  min-width: 280px;
+  max-width: 600px;
+  display: flex; flex-direction: column;
+  border-left: 1px solid var(--border);
+  background: var(--bg-dark);
+  flex-shrink: 0;
+}
+.editor-topbar {
+  padding: 0 14px;
+  height: 42px;
+  display: flex; align-items: center; gap: 10px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  background: var(--bg-panel);
+}
+.editor-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 2px;
+  flex: 1;
+}
+.editor-btn {
+  padding: 5px 14px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 1px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.15s;
+  border: 1px solid var(--border);
+  background: none;
+}
+.editor-btn.run {
+  border-color: var(--green);
+  color: var(--green);
+  background: var(--green-glow);
+}
+.editor-btn.run:hover {
+  background: rgba(57,255,20,0.18);
+  box-shadow: 0 0 10px rgba(57,255,20,0.2);
+}
+.editor-btn.run:disabled {
+  opacity: 0.5; cursor: not-allowed;
+}
+.editor-btn.reset { color: var(--text-muted); }
+.editor-btn.reset:hover { color: var(--amber); border-color: var(--amber); background: rgba(255,170,0,0.08); }
+
+.cm-wrap {
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+  position: relative;
+}
+.CodeMirror {
+  height: 100% !important;
+  font-family: var(--mono) !important;
+  font-size: 14px !important;
+  background: var(--bg-dark) !important;
+  color: #abb2bf !important;
+  border: none !important;
+  line-height: 1.6 !important;
+}
+.CodeMirror-scroll { padding-bottom: 8px; }
+.CodeMirror-gutters { background: var(--bg-panel) !important; border-right: 1px solid var(--border) !important; }
+.CodeMirror-linenumber { color: var(--text-muted) !important; padding: 0 10px !important; }
+.CodeMirror-cursor { border-left-color: var(--cyan) !important; }
+.CodeMirror-selected { background: rgba(0,245,255,0.1) !important; }
+.cm-keyword { color: #c792ea !important; }
+.cm-def { color: #82aaff !important; }
+.cm-variable { color: var(--text-primary) !important; }
+.cm-variable-2 { color: #80cbc4 !important; }
+.cm-string { color: #c3e88d !important; }
+.cm-string-2 { color: #c3e88d !important; }
+.cm-number { color: #f78c6c !important; }
+.cm-comment { color: #546e7a !important; font-style: italic !important; }
+.cm-operator { color: #89ddff !important; }
+.cm-builtin { color: var(--amber) !important; }
+.cm-meta { color: var(--cyan-dim) !important; }
+
+.output-area {
+  height: 200px;
+  min-height: 100px;
+  border-top: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  flex-shrink: 0;
+  resize: vertical;
+  overflow: hidden;
+}
+.output-header {
+  padding: 0 14px;
+  height: 36px;
+  display: flex; align-items: center; gap: 8px;
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.output-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 2px;
+  flex: 1;
+}
+.output-clear {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  background: none; border: none;
+  cursor: pointer; padding: 4px 8px;
+  transition: color 0.2s;
+  letter-spacing: 1px;
+}
+.output-clear:hover { color: var(--red); }
+#output-terminal {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 14px;
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.7;
+  background: var(--bg-void);
+}
+#output-terminal::-webkit-scrollbar { width: 3px; }
+#output-terminal::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.out-line { white-space: pre-wrap; word-break: break-word; }
+.out-line.stdout { color: var(--green); }
+.out-line.stderr { color: var(--red); }
+.out-line.info   { color: var(--cyan-dim); }
+.out-line.warn   { color: var(--amber); }
+.out-line.prompt { color: var(--text-muted); }
+.out-running { color: var(--amber); animation: flash 0.8s ease-in-out infinite; }
+@keyframes flash { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+/* ===== SANDBOX VIEW ===== */
+.sandbox-view {
+  flex: 1; display: flex; flex-direction: column; overflow: hidden;
+}
+.sandbox-topbar {
+  padding: 0 20px;
+  height: 50px;
+  display: flex; align-items: center; gap: 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-dark);
+  flex-shrink: 0;
+}
+.sandbox-title {
+  font-family: var(--display);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--green);
+  letter-spacing: 3px;
+  text-shadow: 0 0 10px var(--green);
+}
+.sandbox-snippet-btns {
+  display: flex; gap: 6px; flex-wrap: wrap;
+  flex: 1;
+}
+.snippet-btn {
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 1px;
+}
+.snippet-btn:hover { border-color: var(--green); color: var(--green); background: var(--green-glow); }
+.sandbox-body { flex: 1; display: flex; overflow: hidden; }
+.sandbox-editor-wrap { flex: 1; min-width: 0; display: flex; flex-direction: column; overflow: hidden; }
+.sandbox-editor-topbar {
+  height: 40px; padding: 0 14px;
+  display: flex; align-items: center; gap: 10px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-panel); flex-shrink: 0;
+}
+.sandbox-cm-wrap { flex: 1; overflow: hidden; min-height: 0; }
+.sandbox-output {
+  width: 45%; min-width: 200px;
+  border-left: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  background: var(--bg-void);
+}
+.sandbox-out-header {
+  height: 40px; padding: 0 14px;
+  display: flex; align-items: center; gap: 8px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-panel); flex-shrink: 0;
+}
+#sandbox-terminal {
+  flex: 1; overflow-y: auto;
+  padding: 12px 14px;
+  font-family: var(--mono);
+  font-size: 13px; line-height: 1.7;
+}
+#sandbox-terminal::-webkit-scrollbar { width: 3px; }
+#sandbox-terminal::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+/* ===== PROGRESS VIEW ===== */
+.progress-view {
+  flex: 1; overflow-y: auto; padding: 32px;
+}
+.progress-view::-webkit-scrollbar { width: 4px; }
+.progress-view::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.progress-title {
+  font-family: var(--display);
+  font-size: 20px; font-weight: 700;
+  color: var(--cyan); letter-spacing: 4px;
+  margin-bottom: 8px;
+  text-shadow: 0 0 20px var(--cyan-glow);
+}
+.progress-sub {
+  font-family: var(--mono); font-size: 12px;
+  color: var(--text-muted); letter-spacing: 2px;
+  margin-bottom: 32px;
+}
+.progress-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px; margin-bottom: 32px;
+}
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 16px 18px;
+}
+.stat-card-label { font-family: var(--mono); font-size: 10px; color: var(--text-muted); letter-spacing: 2px; margin-bottom: 8px; }
+.stat-card-value { font-family: var(--display); font-size: 28px; font-weight: 700; }
+.stat-card-value.cyan { color: var(--cyan); text-shadow: 0 0 12px var(--cyan-glow); }
+.stat-card-value.green { color: var(--green); text-shadow: 0 0 12px var(--green-glow); }
+.stat-card-value.amber { color: var(--amber); }
+
+.progress-modules { display: flex; flex-direction: column; gap: 16px; }
+.progress-module-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 18px 20px;
+}
+.pm-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.pm-icon { font-size: 20px; }
+.pm-title { font-family: var(--display); font-size: 13px; font-weight: 700; color: var(--text-primary); letter-spacing: 2px; }
+.pm-count { font-family: var(--mono); font-size: 11px; color: var(--text-muted); }
+.pm-bar-bg { height: 4px; background: var(--border); border-radius: 2px; margin-bottom: 12px; overflow: hidden; }
+.pm-bar-fill { height: 100%; background: linear-gradient(90deg, var(--cyan), var(--green)); border-radius: 2px; box-shadow: 0 0 6px var(--cyan); transition: width 0.6s ease; }
+.pm-lessons { display: flex; flex-wrap: wrap; gap: 6px; }
+.pm-lesson-chip {
+  font-family: var(--mono); font-size: 10px;
+  padding: 4px 10px; border-radius: 2px;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  cursor: pointer; transition: all 0.2s;
+}
+.pm-lesson-chip:hover { border-color: var(--cyan-dim); color: var(--cyan); }
+.pm-lesson-chip.done { border-color: var(--green-dim); color: var(--green); background: var(--green-glow); }
+
+/* ===== MOBILE BOTTOM NAV ===== */
+.mobile-nav {
+  display: none;
+  height: var(--bottom-h);
+  background: var(--bg-dark);
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.mobile-nav-inner {
+  height: 100%;
+  display: flex; align-items: stretch;
+}
+.mobile-nav-btn {
+  flex: 1;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 3px;
+  font-family: var(--mono); font-size: 9px; letter-spacing: 1px;
+  color: var(--text-muted); cursor: pointer;
+  background: none; border: none;
+  transition: all 0.2s;
+}
+.mobile-nav-btn:hover, .mobile-nav-btn.active { color: var(--cyan); }
+.mobile-nav-icon { font-size: 18px; }
+
+/* ===== MOBILE SIDEBAR OVERLAY ===== */
+.sidebar-overlay {
+  display: none;
+  position: fixed; inset: 0; z-index: 100;
+  background: rgba(0,0,0,0.7);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  :root { --sidebar-w: 280px; }
+  .sidebar {
+    position: fixed;
+    top: var(--header-h); bottom: var(--bottom-h);
+    left: 0; z-index: 200;
+    transform: translateX(-100%);
+  }
+  .sidebar.open { transform: translateX(0); }
+  .sidebar-overlay { display: block; }
+  .mobile-nav { display: flex; }
+  .editor-panel {
+    width: 100%; max-width: 100%;
+    border-left: none;
+    border-top: 1px solid var(--border);
+    min-height: 50%;
+    max-height: 60%;
+  }
+  .lesson-view { flex-direction: column; }
+  .lesson-doc { padding: 16px; }
+  .sandbox-body { flex-direction: column; }
+  .sandbox-output { width: 100%; border-left: none; border-top: 1px solid var(--border); height: 220px; }
+  .lesson-nav-buttons { flex-wrap: wrap; }
+  .app-header .header-progress-mini { display: none; }
+  .sandbox-snippet-btns { display: none; }
+}
+@media (min-width: 769px) {
+  .sidebar-overlay { pointer-events: none; opacity: 0; }
+}
+
+/* ===== WELCOME / EMPTY STATE ===== */
+.welcome-view {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 40px 20px; text-align: center;
+}
+.welcome-logo { font-family: var(--display); font-size: 42px; font-weight: 900; color: var(--cyan); letter-spacing: 6px; text-shadow: 0 0 40px var(--cyan-glow); margin-bottom: 8px; }
+.welcome-logo span { color: var(--green); text-shadow: 0 0 20px var(--green-glow); }
+.welcome-tag { font-family: var(--mono); font-size: 12px; color: var(--text-muted); letter-spacing: 3px; margin-bottom: 48px; }
+.welcome-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; max-width: 700px; width: 100%; }
+.welcome-card {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 4px; padding: 20px;
+  cursor: pointer; transition: all 0.2s; text-align: left;
+}
+.welcome-card:hover { border-color: var(--cyan-dim); background: var(--bg-hover); box-shadow: 0 0 20px var(--cyan-glow); }
+.welcome-card-icon { font-size: 24px; margin-bottom: 10px; }
+.welcome-card-title { font-family: var(--display); font-size: 12px; font-weight: 700; color: var(--cyan); letter-spacing: 2px; margin-bottom: 6px; }
+.welcome-card-desc { font-family: var(--body); font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+
+/* Badge for lesson number */
+.lesson-num {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--text-muted);
+  min-width: 20px;
+}
+
+/* ===== INPUT SYSTEM ===== */
+.input-row {
+  display: flex; align-items: center; gap: 8px;
+  margin: 4px 0;
+}
+.input-caret {
+  color: var(--cyan); font-size: 11px; font-family: var(--mono);
+}
+.terminal-input {
+  flex: 1;
+  background: rgba(0,245,255,0.05);
+  border: 1px solid var(--cyan-dim);
+  border-radius: 2px;
+  color: var(--cyan);
+  font-family: var(--mono);
+  font-size: 13px;
+  padding: 3px 8px;
+  outline: none;
+  caret-color: var(--cyan);
+}
+.terminal-input:focus {
+  border-color: var(--cyan);
+  box-shadow: 0 0 8px var(--cyan-glow);
+}
+.input-submit {
+  font-family: var(--mono); font-size: 10px;
+  letter-spacing: 1px;
+  padding: 4px 10px;
+  background: var(--cyan-deep);
+  border: 1px solid var(--cyan-dim);
+  color: var(--cyan);
+  border-radius: 2px; cursor: pointer;
+  transition: all 0.2s;
+}
+.input-submit:hover { background: var(--cyan-glow); }
+.out-line.input-echo { color: var(--cyan-dim); }
+.out-line.prompt { color: var(--cyan); }
+
+</style>
 </head>
 <body>
 
-    <header>
-        <div style="display:flex; align-items:center; gap:15px;">
-            <h2 id="app-title" style="font-size: 1rem; letter-spacing: 1px;">PYTHON MASTERY PRO</h2>
-            <div id="status" style="font-size: 0.7rem; opacity: 0.8;">Syncing WASM...</div>
-        </div>
-        <button id="toggle-mode" class="mode-toggle">Enter Sandbox</button>
-    </header>
+<!-- LOADING SCREEN -->
+<div id="loading-screen">
+  <div class="load-logo">PYTHON<span>DOJO</span></div>
+  <div class="load-sub">INITIALIZING RUNTIME ENVIRONMENT</div>
+  <div class="load-bar-wrap"><div class="load-bar" id="load-bar"></div></div>
+  <div class="load-status" id="load-status">BOOTING<span class="load-dots"></span></div>
+</div>
 
-    <div class="main-container">
-        <aside class="sidebar">
-            <div id="course-section">
-                <div class="card-h">Curriculum</div>
-                <div id="lesson-list"></div>
-            </div>
-            
-            <div id="files-section" class="hidden">
-                <div class="card-h">Project Files</div>
-                <div id="file-list"></div>
-                <button id="new-file-btn" class="btn btn-ghost" style="width:100%; margin-top:5px;">+ New File</button>
-            </div>
-
-            <div class="card" id="progress-card">
-                <div class="card-h">Overall Progress</div>
-                <div style="height:6px; background:#eee; border-radius:3px; overflow:hidden;">
-                    <div id="progress-fill" style="height:100%; background:var(--green); width: 0%;"></div>
-                </div>
-            </div>
-        </aside>
-
-        <main class="editor-wrap">
-            <div id="obj-card" class="card" style="background: var(--green-soft); border-left: 5px solid var(--green);">
-                <div class="card-h">Current Objective</div>
-                <p id="obj-text" style="font-size: 0.9rem;">Select a lesson to begin.</p>
-            </div>
-
-            <div class="ide-box">
-                <div style="background:#f4f0e6; padding: 8px 15px; display:flex; justify-content:space-between; align-items:center;">
-                    <span id="file-name-display" style="font-size: 0.7rem; font-weight:bold; color:var(--light);">main.py</span>
-                    <div style="display:flex; gap:10px;">
-                        <button id="run-btn" class="btn btn-ghost" disabled>Run</button>
-                        <button id="submit-btn" class="btn btn-primary" disabled>Submit Challenge</button>
-                    </div>
-                </div>
-                <textarea id="editor"></textarea>
-            </div>
-
-            <div class="terminal" id="terminal">Booting Python Engine...</div>
-        </main>
-
-        <aside class="sidebar sidebar-right">
-            <div class="card">
-                <div class="card-h">Variable Watcher</div>
-                <div id="inspector-content" style="max-height: 200px; overflow-y:auto;">
-                    <em style="font-size:0.7rem; color:var(--light);">Run code to inspect state.</em>
-                </div>
-            </div>
-
-            <div class="card" style="flex:1; display:flex; flex-direction:column;">
-                <div class="card-h">Quick Reference</div>
-                <input type="text" id="doc-search" class="search-box" placeholder="Search functions (e.g. print)...">
-                <div id="doc-results" style="font-size: 0.8rem; overflow-y:auto; flex:1;">
-                    <p style="color:var(--light);">Start typing to find syntax help.</p>
-                </div>
-            </div>
-        </aside>
+<!-- MAIN APP -->
+<div id="app">
+  <header class="app-header">
+    <div class="header-logo">PYTHON<span>DOJO</span></div>
+    <div class="header-version">v1.0</div>
+    <div class="header-spacer"></div>
+    <div class="header-progress-mini" id="header-progress">0 / 0 COMPLETE</div>
+    <div class="header-status">
+      <div class="status-dot"></div>
+      <span id="runtime-status" style="font-family:var(--mono);font-size:11px;color:var(--text-secondary)">PYODIDE READY</span>
     </div>
+    <!-- Mobile hamburger -->
+    <button id="mob-menu-btn" onclick="toggleSidebar()" style="display:none;background:none;border:none;color:var(--cyan);font-size:20px;cursor:pointer;margin-left:8px;">☰</button>
+  </header>
 
-    <script>
-        // --- Curriculum & Data ---
-        const lessons = [
-            { id: 1, title: "The Variable", obj: "Create a variable named 'score' and set it to 10.", test: "assert score == 10", code: "score = " },
-            { id: 2, title: "User Input", obj: "Ask for a name using input() and store it in 'user'.", test: "assert len(user) > 0", code: "user = " },
-            { id: 3, title: "Math & Logic", obj: "Create 'total' which is 5 plus 5.", test: "assert total == 10", code: "" }
-        ];
+  <div class="app-body">
+    <!-- SIDEBAR -->
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-nav">
+        <button class="nav-tab active" id="tab-lessons" onclick="switchSidebarTab('lessons')">LESSONS</button>
+        <button class="nav-tab" id="tab-progress" onclick="switchSidebarTab('progress')">PROGRESS</button>
+      </div>
+      <div class="sidebar-content" id="sidebar-scroll">
+        <!-- Sandbox entry -->
+        <div class="sandbox-nav-item" id="sandbox-nav-item" onclick="showView('sandbox')">
+          <span>⚡</span>
+          <span>FREE SANDBOX</span>
+          <span style="margin-left:auto;font-size:10px;color:var(--text-muted)">▶</span>
+        </div>
+        <!-- Lesson tree populated by JS -->
+        <div id="lesson-tree"></div>
+      </div>
+    </aside>
 
-        const docLibrary = [
-            { name: "print()", desc: "Outputs text to the console.", ex: "print('Hello World')" },
-            { name: "input()", desc: "Gathers text from the user.", ex: "name = input('Name?')" },
-            { name: "int()", desc: "Converts a string to a whole number.", ex: "age = int('25')" },
-            { name: "len()", desc: "Returns the length of a string or list.", ex: "len('Hello') # 5" }
-        ];
+    <!-- MAIN CONTENT -->
+    <main class="main-content" id="main-content">
 
-        let pyodide = null;
-        let isSandbox = false;
-        let currentFile = 'main.py';
-        let virtualFS = { 'main.py': '# Welcome to the Sandbox\nprint("Hello World!")' };
-        let unlocked = JSON.parse(localStorage.getItem('up_unlocked')) || [1];
+      <!-- WELCOME VIEW -->
+      <div class="welcome-view" id="view-welcome">
+        <div class="welcome-logo">PYTHON<span>DOJO</span></div>
+        <div class="welcome-tag">YOUR PERSONAL PYTHON LEARNING ENVIRONMENT</div>
+        <div class="welcome-cards">
+          <div class="welcome-card" onclick="openFirstLesson()">
+            <div class="welcome-card-icon">📖</div>
+            <div class="welcome-card-title">START LEARNING</div>
+            <div class="welcome-card-desc">Begin from the first lesson. CS50P-aligned curriculum from basics to advanced.</div>
+          </div>
+          <div class="welcome-card" onclick="showView('sandbox')">
+            <div class="welcome-card-icon">⚡</div>
+            <div class="welcome-card-title">FREE SANDBOX</div>
+            <div class="welcome-card-desc">Jump straight in. Write and run any Python code instantly in your browser.</div>
+          </div>
+          <div class="welcome-card" onclick="showProgressView()">
+            <div class="welcome-card-icon">📊</div>
+            <div class="welcome-card-title">PROGRESS</div>
+            <div class="welcome-card-desc">Track your journey. See completed lessons and modules at a glance.</div>
+          </div>
+        </div>
+      </div>
 
-        const cm = CodeMirror.fromTextArea(document.getElementById('editor'), {
-            mode: "python", lineNumbers: true, autoCloseBrackets: true, matchBrackets: true
-        });
+      <!-- LESSON VIEW -->
+      <div class="lesson-view" id="view-lesson" style="display:none;">
+        <div class="lesson-doc" id="lesson-doc"></div>
+        <div class="editor-panel" id="editor-panel">
+          <div class="editor-topbar">
+            <span class="editor-label">EDITOR</span>
+            <button class="editor-btn reset" onclick="resetCode()">RESET</button>
+            <button class="editor-btn run" id="run-btn" onclick="runCode()">▶ RUN</button>
+          </div>
+          <div class="cm-wrap" id="cm-wrap"></div>
+          <div class="output-area">
+            <div class="output-header">
+              <span class="output-label">OUTPUT</span>
+              <button class="output-clear" onclick="clearOutput()">CLEAR</button>
+            </div>
+            <div id="output-terminal"></div>
+          </div>
+        </div>
+      </div>
 
-        // --- Core Logic ---
-        async function init() {
-            pyodide = await loadPyodide({
-                stdout: (t) => appendTerm(t),
-                stderr: (t) => appendTerm(t, 'color:#ffab91')
-            });
-            await pyodide.runPythonAsync(`import builtins, js\ndef c_in(p=''): return js.prompt(p)\nbuiltins.input = c_in`);
-            
-            document.getElementById('status').textContent = "Engine Ready";
-            document.getElementById('run-btn').disabled = false;
-            document.getElementById('submit-btn').disabled = false;
-            renderAll();
-        }
+      <!-- SANDBOX VIEW -->
+      <div class="sandbox-view" id="view-sandbox" style="display:none;">
+        <div class="sandbox-topbar">
+          <span class="sandbox-title">SANDBOX</span>
+          <div class="sandbox-snippet-btns">
+            <button class="snippet-btn" onclick="loadSnippet('hello')">Hello World</button>
+            <button class="snippet-btn" onclick="loadSnippet('fibonacci')">Fibonacci</button>
+            <button class="snippet-btn" onclick="loadSnippet('list_comp')">List Comp</button>
+            <button class="snippet-btn" onclick="loadSnippet('class')">OOP Class</button>
+            <button class="snippet-btn" onclick="loadSnippet('file_sim')">Dict Example</button>
+            <button class="snippet-btn" onclick="loadSnippet('exception')">Try/Except</button>
+          </div>
+        </div>
+        <div class="sandbox-body">
+          <div class="sandbox-editor-wrap">
+            <div class="sandbox-editor-topbar">
+              <span class="editor-label">PYTHON — FREE EDIT</span>
+              <button class="editor-btn reset" onclick="clearSandbox()">CLEAR</button>
+              <button class="editor-btn run" id="sandbox-run-btn" onclick="runSandbox()">▶ RUN</button>
+            </div>
+            <div class="sandbox-cm-wrap" id="sandbox-cm-wrap"></div>
+          </div>
+          <div class="sandbox-output">
+            <div class="sandbox-out-header">
+              <span class="output-label">OUTPUT</span>
+              <button class="output-clear" onclick="clearSandboxOutput()">CLEAR</button>
+            </div>
+            <div id="sandbox-terminal"></div>
+          </div>
+        </div>
+      </div>
 
-        function appendTerm(msg, style='') {
-            const term = document.getElementById('terminal');
-            term.innerHTML += `<span style="${style}">${msg}</span>\n`;
-            term.scrollTop = term.scrollHeight;
-        }
+      <!-- PROGRESS VIEW -->
+      <div class="progress-view" id="view-progress" style="display:none;">
+        <div class="progress-title">PROGRESS LOG</div>
+        <div class="progress-sub">TRACKING YOUR LEARNING JOURNEY</div>
+        <div class="progress-stats" id="progress-stats"></div>
+        <div class="progress-modules" id="progress-modules"></div>
+      </div>
 
-        async function runPython(isSubmit = false) {
-            const code = cm.getValue();
-            if (isSandbox) virtualFS[currentFile] = code;
-            
-            appendTerm(`>>> Executing ${currentFile}...`, 'color:#888');
-            try {
-                await pyodide.runPythonAsync(code);
-                updateInspector();
-                if (isSubmit) validateChallenge();
-            } catch (e) { appendTerm(e, 'color:#ffab91'); }
-        }
+    </main>
+  </div>
 
-        function updateInspector() {
-            const content = document.getElementById('inspector-content');
-            try {
-                const globals = pyodide.globals.toJs();
-                content.innerHTML = "";
-                for (let [key, val] of globals) {
-                    if (key.startsWith('_') || typeof val === 'function') continue;
-                    content.innerHTML += `<div class="inspector-row"><span class="var-name">${key}</span><span>${val}</span></div>`;
-                }
-            } catch (e) { console.log(e); }
-        }
+  <!-- MOBILE BOTTOM NAV -->
+  <nav class="mobile-nav">
+    <div class="mobile-nav-inner">
+      <button class="mobile-nav-btn active" id="mnav-lessons" onclick="mobileSwitchTab('lessons')">
+        <span class="mobile-nav-icon">📖</span>LESSONS
+      </button>
+      <button class="mobile-nav-btn" id="mnav-sandbox" onclick="mobileSwitchTab('sandbox')">
+        <span class="mobile-nav-icon">⚡</span>SANDBOX
+      </button>
+      <button class="mobile-nav-btn" id="mnav-progress" onclick="mobileSwitchTab('progress')">
+        <span class="mobile-nav-icon">📊</span>PROGRESS
+      </button>
+    </div>
+  </nav>
+</div>
 
-        function validateChallenge() {
-            const lesson = lessons.find(l => l.id === unlocked[unlocked.length-1]);
-            try {
-                pyodide.runPython(lesson.test);
-                appendTerm("CHALLENGE COMPLETE!", "color:var(--green); font-weight:bold;");
-                if (!unlocked.includes(lesson.id + 1) && lesson.id < lessons.length) {
-                    unlocked.push(lesson.id + 1);
-                    localStorage.setItem('up_unlocked', JSON.stringify(unlocked));
-                    renderAll();
-                }
-            } catch (e) { appendTerm("Logic incorrect. Try again!", "color:#ffab91"); }
-        }
+<script>
+const CURRICULUM = [{"id": "mod0", "title": "FOUNDATIONS", "icon": "🔧", "lessons": [{"id": "l0-0", "title": "Welcome to Python", "subtitle": "What Python is, why it matters, and your first program.", "starterCode": "# Welcome to PythonDojo!\n# Let's write your very first Python program.\n\nprint(\"Hello, World!\")\nprint(\"Welcome to PythonDojo!\")\n\n# Try changing the message above and hit RUN!", "content": [{"type": "section", "title": "WHAT IS PYTHON?", "body": "<p>Python is a <strong>high-level, interpreted programming language</strong> created by Guido van Rossum in 1991. It is designed to be readable and straightforward — almost like pseudocode that actually runs.</p><p>CS50P uses Python because it lets you focus on <strong>problem solving</strong> rather than wrestling with syntax. Python powers everything from web apps to data science, AI, and automation.</p>"}, {"type": "concept", "text": "In Python, you do not need to declare types, manage memory, or add semicolons. The interpreter handles that. You write clean code — Python figures out the rest."}, {"type": "section", "title": "YOUR FIRST PROGRAM", "body": "<p>Every Python journey starts with <code>print()</code> — a built-in function that outputs text to the console.</p>"}, {"type": "example", "label": "EXAMPLE — print()", "code": "print(\"Hello, World!\")\nprint(\"Python is awesome!\")\nprint(42)\nprint(3.14)"}, {"type": "section", "title": "RUNNING CODE", "body": "<p>The <strong>editor on the right</strong> is your workspace. Write Python code, hit <strong>RUN</strong>, and the output terminal shows results instantly. The Python runtime runs <strong>entirely in your browser</strong>.</p>"}, {"type": "info", "label": "CS50P CONNECTION", "text": "This mirrors Week 0 of CS50P. David Malan starts with print() and builds from there. Every lesson in this Dojo follows the same CS50P progression."}]}, {"id": "l0-1", "title": "Variables & Data Types", "subtitle": "Storing data in named containers. Strings, integers, floats, and booleans.", "starterCode": "# VARIABLES & DATA TYPES\nname = \"Jordan\"      # str\nage = 25             # int\nheight = 5.9         # float\nis_learning = True   # bool\n\nprint(\"Name:\", name)\nprint(\"Age:\", age)\nprint(\"Height:\", height)\nprint(\"Learning Python?\", is_learning)\n\nprint(type(name))\nprint(type(age))\nprint(type(height))\nprint(type(is_learning))", "content": [{"type": "section", "title": "VARIABLES", "body": "<p>A <strong>variable</strong> is a named container for data. In Python, you create one with the <code>=</code> assignment operator. No <code>var</code>, no <code>let</code>, no type declaration — just a name and a value.</p>"}, {"type": "example", "label": "ASSIGNMENT", "code": "city = \"Denver\"\npopulation = 715522\nelevation = 5280.0\nis_capital = False\nprint(city, population, elevation, is_capital)"}, {"type": "section", "title": "THE FOUR BASIC TYPES", "body": "<p><strong>str</strong> — Text in quotes. <code>\"hello\"</code> or <code>'hello'</code> both work.</p><p><strong>int</strong> — Whole numbers. <code>42</code>, <code>-7</code>, <code>1000000</code>.</p><p><strong>float</strong> — Numbers with decimals. <code>3.14</code>, <code>-0.5</code>.</p><p><strong>bool</strong> — Only <code>True</code> or <code>False</code>. Used for logic.</p>"}, {"type": "concept", "text": "Python is dynamically typed — a variable's type is determined by its value, and it can change. x = 5 makes x an int. x = 'hello' now makes x a str. No error."}, {"type": "example", "label": "type() FUNCTION", "code": "x = 42\nprint(type(x))     # int\nx = \"forty-two\"\nprint(type(x))     # str\nx = True\nprint(type(x))     # bool"}, {"type": "info", "label": "NAMING CONVENTION", "text": "Python variable names use snake_case — all lowercase with underscores. first_name, not firstName. This is PEP 8, Python's official style guide."}]}, {"id": "l0-2", "title": "User Input & f-Strings", "subtitle": "Taking input from the user and building dynamic strings.", "starterCode": "# USER INPUT & F-STRINGS\n# input() pauses and waits for the user to type.\n# Hit RUN and type your answer in the prompt below!\n\nname = input(\"What is your name? \")\nprint(\"Hello,\", name + \"!\")\n\n# f-strings embed variables directly in text\ncity = \"Denver\"\nyear = 2025\nprint(f\"You are in {city} in {year}.\")\n\n# Math inside f-strings\nprice = 9.99\nqty = 3\ntotal = price * qty\nprint(f\"Total: ${total:.2f}\")", "content": [{"type": "section", "title": "GETTING INPUT", "body": "<p>The <code>input()</code> function pauses execution and waits for the user to type. Whatever they type is returned as a <strong>string</strong>. In this Dojo, a prompt dialog appears so you can type real input.</p>"}, {"type": "example", "label": "INPUT BASICS", "code": "name = input(\"Enter your name: \")\nprint(\"Hello,\", name)\n\n# input() ALWAYS returns a string\nage_str = input(\"How old are you? \")\nage = int(age_str)   # convert to int\nprint(\"Next year:\", age + 1)"}, {"type": "section", "title": "F-STRINGS", "body": "<p>F-strings (formatted string literals) are the modern way to embed variables in strings. Prefix with <code>f</code>, then use <code>{}</code> curly braces to insert any expression.</p>"}, {"type": "concept", "text": "f-strings evaluate the expression inside {} at runtime. You can put variables, math, method calls — anything that produces a value — inside the braces."}, {"type": "example", "label": "F-STRING FEATURES", "code": "name = \"Jordan\"\nscore = 95.7\nprint(f\"Player: {name}\")\nprint(f\"Score: {score:.1f}%\")\n\na, b = 10, 3\nprint(f\"{a} / {b} = {a/b:.2f}\")\n\n# Padding\nprint(f\"{\"LEFT\":<10}|{\"RIGHT\":>10}\")"}, {"type": "info", "label": "CS50P STYLE", "text": "CS50P teaches f-strings as the preferred way to format output. The older .format() method and % formatting still work, but f-strings are cleaner and faster."}]}]}, {"id": "mod1", "title": "CONTROL FLOW", "icon": "🔀", "lessons": [{"id": "l1-0", "title": "Conditionals", "subtitle": "Making decisions with if, elif, and else.", "starterCode": "# CONDITIONALS\ngrade = 85\n\nif grade >= 90:\n    print(\"A — Excellent!\")\nelif grade >= 80:\n    print(\"B — Good work!\")\nelif grade >= 70:\n    print(\"C — Passing.\")\nelse:\n    print(\"Below passing.\")\n\n# Try different grade values!\n\ntemp = 72\nis_raining = False\n\nif temp > 65 and not is_raining:\n    print(\"Great day for a walk!\")\nelse:\n    print(\"Maybe stay inside.\")", "content": [{"type": "section", "title": "IF STATEMENTS", "body": "<p>Conditionals let your program make decisions. Python uses <code>if</code>, <code>elif</code>, and <code>else</code> to branch logic based on conditions.</p><p>Indentation is <strong>everything</strong> in Python. A block under an <code>if</code> must be indented with 4 spaces.</p>"}, {"type": "example", "label": "BASIC CONDITIONAL", "code": "x = 10\n\nif x > 0:\n    print(\"Positive\")\nelif x < 0:\n    print(\"Negative\")\nelse:\n    print(\"Zero\")"}, {"type": "section", "title": "COMPARISON OPERATORS", "body": "<p><code>==</code> equal &nbsp;|&nbsp; <code>!=</code> not equal &nbsp;|&nbsp; <code>&gt;</code> greater &nbsp;|&nbsp; <code>&lt;</code> less &nbsp;|&nbsp; <code>&gt;=</code> at least &nbsp;|&nbsp; <code>&lt;=</code> at most</p><p>Combine with <strong>and</strong>, <strong>or</strong>, <strong>not</strong> — Python uses English words, not <code>&amp;&amp;</code>/<code>||</code>.</p>"}, {"type": "concept", "text": "Python uses indentation (whitespace) to define code blocks — not curly braces. This forces readable code. The standard is 4 spaces per indent level."}, {"type": "example", "label": "LOGICAL OPERATORS", "code": "age = 20\nhas_id = True\n\nif age >= 18 and has_id:\n    print(\"Access granted\")\n\nscore = 55\nif score < 0 or score > 100:\n    print(\"Invalid score\")\n\nlogged_in = False\nif not logged_in:\n    print(\"Please log in first\")"}, {"type": "info", "label": "CS50P PATTERN", "text": "CS50P uses conditionals heavily in the first problem sets — checking user input, validating data, branching flow. Nail this and the rest comes naturally."}]}, {"id": "l1-1", "title": "Loops", "subtitle": "Repeating actions with for and while loops.", "starterCode": "# LOOPS\n\n# FOR loop\nprint(\"--- FOR LOOP ---\")\nfor i in range(5):\n    print(f\"Count: {i}\")\n\n# Loop over a list\nfruits = [\"apple\", \"banana\", \"cherry\"]\nfor fruit in fruits:\n    print(f\"Fruit: {fruit}\")\n\n# WHILE loop\nprint(\"\\n--- WHILE LOOP ---\")\ncountdown = 5\nwhile countdown > 0:\n    print(f\"T-minus {countdown}...\")\n    countdown -= 1\nprint(\"Liftoff!\")", "content": [{"type": "section", "title": "FOR LOOPS", "body": "<p>A <code>for</code> loop iterates over a sequence — a range of numbers, a list, a string. Each iteration, the variable holds the current item.</p>"}, {"type": "example", "label": "FOR + RANGE", "code": "for i in range(5):       # 0,1,2,3,4\n    print(i)\n\nfor i in range(1, 6):    # 1,2,3,4,5\n    print(i)\n\nfor i in range(0, 20, 5): # 0,5,10,15\n    print(i)"}, {"type": "section", "title": "WHILE LOOPS", "body": "<p>A <code>while</code> loop keeps running as long as its condition is <code>True</code>. Use it when you do not know in advance how many iterations you need.</p>"}, {"type": "concept", "text": "Be careful with while loops — if the condition never becomes False, you have an infinite loop. Always make sure something inside the loop changes the condition."}, {"type": "example", "label": "BREAK & CONTINUE", "code": "# break — exit loop early\nfor i in range(10):\n    if i == 5:\n        break\n    print(i)   # 0 1 2 3 4\n\n# continue — skip this iteration\nfor i in range(10):\n    if i % 2 == 0:\n        continue\n    print(i)   # 1 3 5 7 9"}]}]}, {"id": "mod2", "title": "DATA STRUCTURES", "icon": "📦", "lessons": [{"id": "l2-0", "title": "Lists", "subtitle": "Ordered, mutable collections of items.", "starterCode": "# LISTS\nscores = [95, 87, 92, 78, 88]\n\nprint(\"First:\", scores[0])\nprint(\"Last:\", scores[-1])\nprint(\"Slice:\", scores[1:4])\n\nscores.append(100)\nprint(\"After append:\", scores)\n\nscores.sort(reverse=True)\nprint(\"Sorted desc:\", scores)\n\nprint(\"Count:\", len(scores))\nprint(\"Max:\", max(scores))\nprint(\"Min:\", min(scores))\nprint(\"Sum:\", sum(scores))", "content": [{"type": "section", "title": "WHAT IS A LIST?", "body": "<p>A <strong>list</strong> is an ordered collection of items. Items can be any type. Lists are <strong>mutable</strong> — you can add, remove, and change items after creation.</p>"}, {"type": "example", "label": "CREATING LISTS", "code": "colors = [\"red\", \"green\", \"blue\"]\nmixed = [1, \"hello\", True, 3.14]\nnested = [[1,2], [3,4], [5,6]]\nempty = []\n\nprint(colors)\nprint(len(mixed))"}, {"type": "section", "title": "INDEXING & SLICING", "body": "<p>Access items by their <strong>index</strong>. Python is <strong>zero-indexed</strong> — first item is at index <code>0</code>. Negative indices count from the end: <code>-1</code> is last.</p>"}, {"type": "example", "label": "LIST METHODS", "code": "items = [\"a\", \"b\", \"c\"]\nitems.append(\"d\")\nitems.insert(0, \"z\")\nitems.remove(\"b\")\npopped = items.pop()\nitems.sort()\nprint(items)\nprint(\"Popped:\", popped)"}, {"type": "info", "label": "CS50P NOTE", "text": "Lists are everywhere in CS50P. Week 2 (Loops) and Week 4 (Libraries) both lean heavily on list manipulation. Get comfortable with .append(), len(), and slicing."}]}, {"id": "l2-1", "title": "Dictionaries", "subtitle": "Key-value pairs for structured data.", "starterCode": "# DICTIONARIES\nstudent = {\n    \"name\": \"Jordan\",\n    \"age\": 25,\n    \"courses\": [\"CS50P\", \"Math\"],\n    \"gpa\": 3.8\n}\n\nprint(\"Name:\", student[\"name\"])\nprint(\"GPA:\", student.get(\"gpa\", 0.0))\n\n# Add / update\nstudent[\"email\"] = \"jordan@example.com\"\nstudent[\"age\"] = 26\n\n# Iterate\nfor key, value in student.items():\n    print(f\"  {key}: {value}\")\n\n# Check key exists\nif \"email\" in student:\n    print(\"Email:\", student[\"email\"])", "content": [{"type": "section", "title": "DICTIONARIES", "body": "<p>A <strong>dictionary</strong> stores data as <code>key: value</code> pairs. Keys must be unique and immutable. Values can be anything. Dicts are perfect for structured records.</p>"}, {"type": "example", "label": "CREATING DICTS", "code": "person = {\"name\": \"Alex\", \"age\": 30}\nconfig = dict(host=\"localhost\", port=5432)\ndata = {}\ndata[\"key\"] = \"value\"\nprint(person)\nprint(config)"}, {"type": "concept", "text": "dict.get(key, default) is safer than dict[key]. If the key does not exist, .get() returns the default instead of raising a KeyError."}, {"type": "example", "label": "DICT OPERATIONS", "code": "d = {\"a\": 1, \"b\": 2, \"c\": 3}\nprint(list(d.keys()))\nprint(list(d.values()))\nprint(list(d.items()))\nprint(d.get(\"z\", 0))\ndel d[\"a\"]\nprint(d)"}]}, {"id": "l2-2", "title": "Tuples & Sets", "subtitle": "Immutable sequences and unique collections.", "starterCode": "# TUPLES & SETS\n\n# Tuple — ordered, immutable\ncoords = (40.7128, -74.0060)\nprint(\"Lat:\", coords[0])\nprint(\"Lon:\", coords[1])\n\n# Unpack tuple\nlat, lon = coords\nprint(f\"Location: {lat}, {lon}\")\n\n# Set — unordered, unique items\ncolors = {\"red\", \"blue\", \"green\", \"red\", \"blue\"}\nprint(\"Unique colors:\", colors)\n\na = {1, 2, 3, 4}\nb = {3, 4, 5, 6}\nprint(\"Union:\", a | b)\nprint(\"Intersection:\", a & b)\nprint(\"Difference:\", a - b)", "content": [{"type": "section", "title": "TUPLES", "body": "<p>A <strong>tuple</strong> is like a list but <strong>immutable</strong> — once created, it cannot be changed. Use tuples for fixed data: coordinates, RGB values, records you should not modify.</p>"}, {"type": "example", "label": "TUPLE BASICS", "code": "point = (3, 4)\nx, y = point   # unpacking\nprint(x, y)\n\n# Tuples as dict keys (lists cannot be)\ngrid = {(0,0): \"origin\", (1,0): \"right\"}\nprint(grid[(0,0)])"}, {"type": "section", "title": "SETS", "body": "<p>A <strong>set</strong> is an unordered collection of <strong>unique</strong> items. Duplicates are automatically removed. Sets support fast membership testing and set math.</p>"}, {"type": "example", "label": "SET OPERATIONS", "code": "nums = {1, 2, 3, 2, 1}   # duplicates removed\nprint(nums)               # {1, 2, 3}\n\nnums.add(4)\nnums.discard(2)\nprint(nums)\n\nprint(3 in nums)   # fast membership test"}]}]}, {"id": "mod3", "title": "FUNCTIONS", "icon": "⚙️", "lessons": [{"id": "l3-0", "title": "Defining Functions", "subtitle": "Writing reusable blocks of code with def.", "starterCode": "# FUNCTIONS\n\ndef greet(name):\n    \"\"\"Say hello to someone.\"\"\"\n    return f\"Hello, {name}!\"\n\nprint(greet(\"Jordan\"))\n\n# Default parameter\ndef power(base, exponent=2):\n    return base ** exponent\n\nprint(power(5))       # 25\nprint(power(2, 10))   # 1024\n\n# Multiple return values\ndef min_max(numbers):\n    return min(numbers), max(numbers)\n\nlow, high = min_max([3, 1, 4, 1, 5, 9, 2, 6])\nprint(f\"Min: {low}, Max: {high}\")", "content": [{"type": "section", "title": "WHAT IS A FUNCTION?", "body": "<p>A <strong>function</strong> is a named block of code that performs a specific task. Define it once, call it anywhere. Functions are the core unit of reusable code in Python.</p>"}, {"type": "example", "label": "FUNCTION ANATOMY", "code": "def add(a, b):           # def + name + params\n    \"\"\"Add two numbers.\"\"\"  # docstring\n    result = a + b\n    return result\n\ntotal = add(3, 4)\nprint(total)  # 7"}, {"type": "section", "title": "PARAMETERS & DEFAULTS", "body": "<p><strong>Parameters</strong> are variables in the definition. <strong>Arguments</strong> are values passed at call time. Default values make parameters optional.</p>"}, {"type": "concept", "text": "A function without a return statement returns None. Always think about what your function should give back — that is what return is for."}, {"type": "example", "label": "SCOPE", "code": "x = 10  # global\n\ndef double_local():\n    x = 99  # local — does not affect global\n    return x * 2\n\nprint(double_local())  # 198\nprint(x)               # 10 unchanged"}, {"type": "info", "label": "CS50P EMPHASIS", "text": "CS50P Week 2 is almost entirely about functions. David Malan pushes hard: decompose programs into small, single-purpose functions. Each function should do one thing well."}]}, {"id": "l3-1", "title": "Lambda & Higher-Order", "subtitle": "Anonymous functions and functions that take functions.", "starterCode": "# LAMBDA & HIGHER-ORDER FUNCTIONS\n\nsquare = lambda x: x ** 2\nprint(square(5))\n\npeople = [\n    {\"name\": \"Alice\", \"age\": 30},\n    {\"name\": \"Bob\", \"age\": 25},\n    {\"name\": \"Charlie\", \"age\": 35},\n]\nsorted_people = sorted(people, key=lambda p: p[\"age\"])\nfor p in sorted_people:\n    print(f\"{p['name']}: {p['age']}\")\n\nnumbers = [1, 2, 3, 4, 5]\nsquared = list(map(lambda x: x**2, numbers))\nevens = list(filter(lambda x: x % 2 == 0, numbers))\nprint(\"Squared:\", squared)\nprint(\"Evens:\", evens)", "content": [{"type": "section", "title": "LAMBDA FUNCTIONS", "body": "<p>A <strong>lambda</strong> is a small anonymous function defined on a single line. It can take any number of arguments but only has one expression, which is automatically returned.</p>"}, {"type": "example", "label": "LAMBDA SYNTAX", "code": "add = lambda x, y: x + y\nprint(add(3, 4))  # 7\n\nwords = [\"banana\", \"apple\", \"cherry\", \"kiwi\"]\nwords.sort(key=lambda w: len(w))\nprint(words)  # sorted by length"}, {"type": "section", "title": "MAP & FILTER", "body": "<p><code>map(func, iterable)</code> applies a function to every item. <code>filter(func, iterable)</code> keeps items where the function returns <code>True</code>.</p>"}, {"type": "concept", "text": "In modern Python, list comprehensions are often preferred over map/filter for readability. But knowing them helps you understand the functional programming style used in many libraries."}]}]}, {"id": "mod4", "title": "PYTHONIC CODE", "icon": "🐍", "lessons": [{"id": "l4-0", "title": "List Comprehensions", "subtitle": "Concise, expressive list construction in one line.", "starterCode": "# LIST COMPREHENSIONS\n\n# Traditional loop\nsquares_old = []\nfor x in range(10):\n    squares_old.append(x ** 2)\n\n# Comprehension\nsquares = [x**2 for x in range(10)]\nprint(\"Squares:\", squares)\n\n# With condition\neven_sq = [x**2 for x in range(20) if x % 2 == 0]\nprint(\"Even squares:\", even_sq)\n\n# String processing\nwords = [\"  hello  \", \"  world  \", \"  python  \"]\nclean = [w.strip().upper() for w in words]\nprint(\"Clean:\", clean)\n\n# Dict comprehension\nlengths = {w: len(w) for w in [\"cat\", \"elephant\", \"dog\"]}\nprint(\"Lengths:\", lengths)", "content": [{"type": "section", "title": "THE PATTERN", "body": "<p>A list comprehension condenses a loop-and-append pattern into one expressive line. Syntax: <code>[expression for item in iterable]</code> or with a filter: <code>[expression for item in iterable if condition]</code>.</p>"}, {"type": "example", "label": "BREAKDOWN", "code": "# Goal: squares of even numbers 0-20\n\n# Loop version\nresult = []\nfor n in range(21):\n    if n % 2 == 0:\n        result.append(n ** 2)\n\n# Comprehension version\nresult = [n**2 for n in range(21) if n % 2 == 0]\nprint(result)"}, {"type": "concept", "text": "List comprehensions are a hallmark of idiomatic Python. If you find yourself writing a loop just to build a list, a comprehension is usually cleaner."}, {"type": "example", "label": "DICT & SET COMPREHENSIONS", "code": "# Dict comprehension\nsquare_map = {n: n**2 for n in range(6)}\nprint(square_map)\n\n# Set comprehension (unique values)\nletters = {c for c in \"hello world\" if c != \" \"}\nprint(letters)"}]}, {"id": "l4-1", "title": "Exception Handling", "subtitle": "Writing robust code that handles errors gracefully.", "starterCode": "# EXCEPTION HANDLING\n\ndef safe_divide(a, b):\n    try:\n        return a / b\n    except ZeroDivisionError:\n        print(\"Cannot divide by zero!\")\n        return None\n\nprint(safe_divide(10, 2))\nprint(safe_divide(10, 0))\n\ndef parse_int(s):\n    try:\n        return int(s)\n    except ValueError:\n        print(f\"Not a valid integer: {s!r}\")\n        return 0\n\nprint(parse_int(\"42\"))\nprint(parse_int(\"abc\"))", "content": [{"type": "section", "title": "WHY HANDLE EXCEPTIONS?", "body": "<p>Exceptions are errors at runtime. Without handling, they crash your program. With <code>try/except</code>, you catch the error, respond gracefully, and keep running.</p>"}, {"type": "example", "label": "TRY/EXCEPT/ELSE/FINALLY", "code": "try:\n    value = int(input(\"Enter a number: \"))\nexcept ValueError as e:\n    print(f\"Bad input: {e}\")\n    value = 0\nelse:\n    print(\"Got:\", value)  # only if no exception\nfinally:\n    print(\"Done.\")         # always runs"}, {"type": "concept", "text": "Never catch bare except: — always name the specific exception type. Catching everything hides bugs you want to know about."}, {"type": "example", "label": "RAISING EXCEPTIONS", "code": "def set_age(age):\n    if not isinstance(age, int):\n        raise TypeError(\"Age must be an integer\")\n    if age < 0 or age > 150:\n        raise ValueError(f\"Age {age} out of range\")\n    return age\n\ntry:\n    set_age(-5)\nexcept ValueError as e:\n    print(f\"ValueError: {e}\")"}, {"type": "info", "label": "CS50P WEEK 3", "text": "CS50P Week 3 is dedicated entirely to exceptions. The pattern: try the risky operation, except the specific error, give a useful message. This is how professional Python looks."}]}]}, {"id": "mod5", "title": "OOP", "icon": "🏗️", "lessons": [{"id": "l5-0", "title": "Classes & Objects", "subtitle": "Object-Oriented Programming fundamentals in Python.", "starterCode": "# CLASSES & OBJECTS\n\nclass Student:\n    school = \"CS50\"  # class variable\n\n    def __init__(self, name, grade):\n        self.name = name\n        self.grade = grade\n\n    def greet(self):\n        return f\"Hi, I am {self.name} from {self.school}!\"\n\n    def letter_grade(self):\n        if self.grade >= 90: return \"A\"\n        elif self.grade >= 80: return \"B\"\n        elif self.grade >= 70: return \"C\"\n        else: return \"F\"\n\n    def __str__(self):\n        return f\"Student({self.name}, {self.grade})\"\n\nalice = Student(\"Alice\", 92)\nbob = Student(\"Bob\", 78)\n\nprint(alice.greet())\nprint(f\"{bob.name} got a {bob.letter_grade()}\")\nprint(alice)", "content": [{"type": "section", "title": "THE CLASS CONCEPT", "body": "<p>A <strong>class</strong> is a template for creating objects. It defines what data (attributes) an object holds and what it can do (methods). An <strong>object</strong> (instance) is a specific realization of that template.</p>"}, {"type": "example", "label": "CLASS ANATOMY", "code": "class Car:\n    wheels = 4  # class variable\n\n    def __init__(self, make, model, year):\n        self.make = make\n        self.model = model\n        self.year = year\n\n    def describe(self):\n        return f\"{self.year} {self.make} {self.model}\"\n\nmy_car = Car(\"Toyota\", \"Camry\", 2023)\nprint(my_car.describe())"}, {"type": "concept", "text": "self refers to the current instance. Every method takes self as its first parameter. When you call obj.method(), Python automatically passes obj as self."}, {"type": "example", "label": "INHERITANCE", "code": "class Animal:\n    def __init__(self, name):\n        self.name = name\n    def speak(self):\n        return \"...\"\n\nclass Dog(Animal):\n    def speak(self):\n        return f\"{self.name} says Woof!\"\n\nclass Cat(Animal):\n    def speak(self):\n        return f\"{self.name} says Meow!\"\n\nfor pet in [Dog(\"Rex\"), Cat(\"Luna\")]:\n    print(pet.speak())"}, {"type": "info", "label": "CS50P WEEK 8", "text": "CS50P dedicates Week 8 entirely to OOP. Real-world Python is built on classes — Django models, dataclasses, Flask routes all use them."}]}]}];
+const SNIPPETS = {"hello": "# Classic Hello World\nprint(\"Hello, World!\")\nprint(\"Welcome to PythonDojo!\")\n\nimport sys\nprint(f\"Python {sys.version.split()[0]}\")", "fibonacci": "# Fibonacci Sequence\ndef fibonacci(n):\n    a, b = 0, 1\n    result = []\n    for _ in range(n):\n        result.append(a)\n        a, b = b, a + b\n    return result\n\nprint(\"First 15 Fibonacci numbers:\")\nprint(fibonacci(15))", "list_comp": "# List Comprehensions\nnumbers = range(1, 21)\n\nsquares = [n**2 for n in numbers]\nprint(\"Squares:\", squares)\n\nevens = [n for n in numbers if n % 2 == 0]\nprint(\"Evens:\", evens)\n\nprimes = [n for n in numbers\n          if n > 1 and all(n % i != 0 for i in range(2, n))]\nprint(\"Primes:\", primes)", "cls": "# OOP — Bank Account\nclass BankAccount:\n    def __init__(self, owner, balance=0):\n        self.owner = owner\n        self.balance = balance\n        self.history = []\n\n    def deposit(self, amount):\n        self.balance += amount\n        self.history.append(f\"+${amount}\")\n        return self\n\n    def withdraw(self, amount):\n        if amount > self.balance:\n            raise ValueError(\"Insufficient funds\")\n        self.balance -= amount\n        self.history.append(f\"-${amount}\")\n        return self\n\n    def __str__(self):\n        return f\"Account({self.owner}, ${self.balance:.2f})\"\n\nacc = BankAccount(\"Jordan\", 100)\nacc.deposit(50).deposit(25).withdraw(30)\nprint(acc)\nprint(\"History:\", acc.history)", "exception": "# Exception Handling\ndef parse_age(value):\n    try:\n        age = int(value)\n        if age < 0 or age > 120:\n            raise ValueError(f\"Age {age} out of range\")\n        return age\n    except ValueError as e:\n        print(f\"  Error: {e}\")\n        return None\n\ncases = [\"25\", \"-5\", \"200\", \"abc\", \"18\"]\nfor case in cases:\n    result = parse_age(case)\n    if result is not None:\n        print(f\"  {case!r} -> {result}\")", "input_demo": "# Interactive Input Demo\n# Try entering different values!\n\nname = input(\"What is your name? \")\nage_str = input(\"How old are you? \")\n\ntry:\n    age = int(age_str)\n    print(f\"Hello, {name}! You are {age} years old.\")\n    print(f\"In 10 years you will be {age + 10}.\")\nexcept ValueError:\n    print(f\"Hello, {name}! {age_str!r} is not a valid age.\")"};
 
-        // --- UI Rendering ---
-        function renderAll() {
-            const lList = document.getElementById('lesson-list');
-            lList.innerHTML = "";
-            lessons.forEach(l => {
-                const item = document.createElement('div');
-                item.className = `nav-item ${!unlocked.includes(l.id) ? 'locked' : ''}`;
-                item.innerHTML = `<span>Week ${l.id}</span> ${unlocked.includes(l.id) ? '✓' : '🔒'}`;
-                if (unlocked.includes(l.id)) item.onclick = () => loadLesson(l.id);
-                lList.appendChild(item);
-            });
+// ============================================================
+// RUNTIME STATE
+// ============================================================
+let pyodide = null;
+let lessonEditor = null;
+let sandboxEditor = null;
+let currentLesson = null;
+let progress = {};
+let currentView = 'welcome';
+let inputQueue = [];
+let inputResolve = null;
 
-            const fList = document.getElementById('file-list');
-            fList.innerHTML = "";
-            Object.keys(virtualFS).forEach(f => {
-                const item = document.createElement('div');
-                item.className = `nav-item ${currentFile === f ? 'active' : ''}`;
-                item.textContent = f;
-                item.onclick = () => switchFile(f);
-                fList.appendChild(item);
-            });
+// ============================================================
+// PYODIDE INIT
+// ============================================================
+async function initPyodide() {
+  const loadBar = document.getElementById('load-bar');
+  const loadStatus = document.getElementById('load-status');
 
-            document.getElementById('progress-fill').style.width = (unlocked.length / lessons.length * 100) + "%";
-        }
+  const steps = [
+    [10, 'LOADING RUNTIME CORE'],
+    [30, 'FETCHING STANDARD LIBRARY'],
+    [55, 'COMPILING PYTHON MODULES'],
+    [75, 'INITIALIZING INTERPRETER'],
+    [90, 'CONFIGURING ENVIRONMENT'],
+  ];
 
-        function loadLesson(id) {
-            const l = lessons.find(x => x.id === id);
-            document.getElementById('obj-text').textContent = l.obj;
-            cm.setValue(l.code);
-        }
+  for (const [pct, msg] of steps) {
+    loadBar.style.width = pct + '%';
+    loadStatus.textContent = msg;
+    await new Promise(r => setTimeout(r, 250 + Math.random() * 300));
+  }
 
-        function switchFile(name) {
-            virtualFS[currentFile] = cm.getValue();
-            currentFile = name;
-            cm.setValue(virtualFS[name]);
-            document.getElementById('file-name-display').textContent = name;
-            renderAll();
-        }
+  try {
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js';
+    document.head.appendChild(script);
+    await new Promise((res, rej) => { script.onload = res; script.onerror = rej; });
 
-        // --- Events ---
-        document.getElementById('toggle-mode').onclick = (e) => {
-            isSandbox = !isSandbox;
-            e.target.textContent = isSandbox ? "Exit Sandbox" : "Enter Sandbox";
-            document.getElementById('course-section').classList.toggle('hidden');
-            document.getElementById('obj-card').classList.toggle('hidden');
-            document.getElementById('submit-btn').classList.toggle('hidden');
-            document.getElementById('files-section').classList.toggle('hidden');
-            document.getElementById('app-title').textContent = isSandbox ? "SANDBOX MODE" : "PYTHON MASTERY PRO";
-            if (!isSandbox) loadLesson(unlocked[unlocked.length-1]);
-        };
+    pyodide = await loadPyodide();
 
-        document.getElementById('new-file-btn').onclick = () => {
-            const name = prompt("File name (e.g. utils.py):");
-            if (name) { virtualFS[name] = "# New Script"; switchFile(name); }
-        };
+    // Setup stdout/stderr capture + async input bridge
+    pyodide.globals.set('_js_input_callback', async (prompt) => {
+      return await requestInput(prompt);
+    });
 
-        document.getElementById('doc-search').oninput = (e) => {
-            const query = e.target.value.toLowerCase();
-            const results = document.getElementById('doc-results');
-            results.innerHTML = "";
-            docLibrary.filter(d => d.name.includes(query)).forEach(d => {
-                results.innerHTML += `<div style="margin-bottom:10px;"><strong>${d.name}</strong><br>${d.desc}<br><code style="background:#eee; padding:2px;">${d.ex}</code></div>`;
-            });
-        };
+    var _pySetup = [
+      'import sys, io',
+      'class _Capture:',
+      '    def __init__(self): self.buf = []',
+      '    def write(self, t):',
+      '        if t: self.buf.append(t)',
+      '    def flush(self): pass',
+      '    def getvalue(self): return "".join(self.buf)',
+      '    def clear(self): self.buf.clear()',
+      '_stdout = _Capture()',
+      '_stderr = _Capture()',
+      'sys.stdout = _stdout',
+      'sys.stderr = _stderr',
+    ].join('\n');
+    pyodide.runPython(_pySetup);
 
-        document.getElementById('run-btn').onclick = () => runPython(false);
-        document.getElementById('submit-btn').onclick = () => runPython(true);
+    loadBar.style.width = '100%';
+    loadStatus.textContent = 'RUNTIME ONLINE';
+    await new Promise(r => setTimeout(r, 400));
+    bootApp();
+  } catch(e) {
+    loadStatus.textContent = 'LOAD FAILED — ' + e.message;
+    loadStatus.style.color = 'var(--red)';
+  }
+}
 
-        init();
-    </script>
+// ============================================================
+// INPUT SYSTEM — inline prompt in the output terminal
+// ============================================================
+function requestInput(prompt) {
+  return new Promise((resolve) => {
+    inputResolve = resolve;
+    const term = document.querySelector('.active-terminal');
+    if (!term) { resolve(''); return; }
+
+    // Show prompt line
+    appendToTerminal(term, 'prompt', String(prompt || ''));
+
+    // Create inline input row
+    const row = document.createElement('div');
+    row.className = 'input-row';
+    row.innerHTML =
+      '<span class="input-caret">▶</span>' +
+      '<input type="text" class="terminal-input" autocomplete="off" spellcheck="false" />' +
+      '<button class="input-submit">ENTER</button>';
+    term.appendChild(row);
+    term.scrollTop = term.scrollHeight;
+
+    const inp = row.querySelector('.terminal-input');
+    inp.focus();
+
+    const submit = () => {
+      const val = inp.value;
+      // Replace row with echoed value
+      row.remove();
+      appendToTerminal(term, 'input-echo', (prompt || '') + val);
+      inputResolve = null;
+      resolve(val);
+    };
+
+    inp.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') submit();
+    });
+    row.querySelector('.input-submit').addEventListener('click', submit);
+  });
+}
+
+function appendToTerminal(term, cls, text) {
+  const d = document.createElement('div');
+  d.className = 'out-line ' + cls;
+  d.textContent = text;
+  term.appendChild(d);
+  term.scrollTop = term.scrollHeight;
+}
+
+// ============================================================
+// BOOT
+// ============================================================
+function bootApp() {
+  loadProgress();
+  document.getElementById('loading-screen').style.display = 'none';
+  document.getElementById('app').classList.add('ready');
+  initEditors();
+  buildLessonTree();
+  updateHeaderProgress();
+  if (window.innerWidth <= 768) {
+    document.getElementById('mob-menu-btn').style.display = 'block';
+  }
+}
+
+// ============================================================
+// EDITORS
+// ============================================================
+function initEditors() {
+  const baseOpts = {
+    mode: 'python',
+    theme: 'none',
+    lineNumbers: true,
+    autoCloseBrackets: true,
+    matchBrackets: true,
+    indentUnit: 4,
+    tabSize: 4,
+    indentWithTabs: false,
+    lineWrapping: true,
+    extraKeys: {
+      'Tab': cm => cm.execCommand('indentMore'),
+      'Shift-Tab': cm => cm.execCommand('indentLess'),
+    },
+  };
+
+  lessonEditor = CodeMirror(document.getElementById('cm-wrap'), {
+    ...baseOpts,
+    value: '# Select a lesson to begin',
+    extraKeys: {
+      ...baseOpts.extraKeys,
+      'Ctrl-Enter': () => runCode(),
+      'Cmd-Enter': () => runCode(),
+    },
+  });
+
+  sandboxEditor = CodeMirror(document.getElementById('sandbox-cm-wrap'), {
+    ...baseOpts,
+    value: SNIPPETS['hello'],
+    extraKeys: {
+      ...baseOpts.extraKeys,
+      'Ctrl-Enter': () => runSandbox(),
+      'Cmd-Enter': () => runSandbox(),
+    },
+  });
+
+  lessonEditor.setSize('100%', '100%');
+  sandboxEditor.setSize('100%', '100%');
+}
+
+// ============================================================
+// LESSON TREE
+// ============================================================
+function buildLessonTree() {
+  const tree = document.getElementById('lesson-tree');
+  tree.innerHTML = '';
+
+  CURRICULUM.forEach(mod => {
+    const done = mod.lessons.filter(l => progress[l.id]).length;
+    const pct = mod.lessons.length ? Math.round(done / mod.lessons.length * 100) : 0;
+
+    const modEl = document.createElement('div');
+    modEl.className = 'module-item';
+    modEl.innerHTML =
+      '<button class="module-toggle" id="mtog-' + mod.id + '" onclick="toggleModule(\'' + mod.id + '\')">' +
+        '<span class="module-icon">' + mod.icon + '</span>' +
+        '<span>' + mod.title + '</span>' +
+        '<div class="module-progress-bar"><div class="module-progress-bar-fill" id="mpbar-' + mod.id + '" style="width:' + pct + '%"></div></div>' +
+        '<span class="module-chevron">▶</span>' +
+      '</button>' +
+      '<div class="lesson-list" id="mlist-' + mod.id + '" style="display:none;">' +
+        mod.lessons.map((l, idx) =>
+          '<div class="lesson-item' + (progress[l.id] ? ' completed' : '') + '" id="litem-' + l.id + '" onclick="openLesson(\'' + mod.id + '\',\'' + l.id + '\')">' +
+            '<span class="lesson-num">' + String(idx + 1).padStart(2, '0') + '</span>' +
+            '<span style="flex:1">' + l.title + '</span>' +
+            '<span class="lesson-check">' + (progress[l.id] ? '✓' : '') + '</span>' +
+          '</div>'
+        ).join('') +
+      '</div>';
+
+    tree.appendChild(modEl);
+  });
+}
+
+function toggleModule(modId) {
+  const list = document.getElementById('mlist-' + modId);
+  const tog = document.getElementById('mtog-' + modId);
+  const isOpen = list.style.display !== 'none';
+  list.style.display = isOpen ? 'none' : 'block';
+  tog.classList.toggle('open', !isOpen);
+}
+
+// ============================================================
+// LESSON OPEN & RENDER
+// ============================================================
+function openLesson(modId, lessonId) {
+  closeSidebar();
+  const mod = CURRICULUM.find(m => m.id === modId);
+  const lesson = mod.lessons.find(l => l.id === lessonId);
+  currentLesson = { mod, lesson };
+
+  document.querySelectorAll('.lesson-item').forEach(el => el.classList.remove('active'));
+  const el = document.getElementById('litem-' + lessonId);
+  if (el) el.classList.add('active');
+
+  // Open module in sidebar
+  const list = document.getElementById('mlist-' + modId);
+  const tog = document.getElementById('mtog-' + modId);
+  if (list) { list.style.display = 'block'; tog.classList.add('open'); }
+
+  renderLessonDoc(mod, lesson);
+  lessonEditor.setValue(lesson.starterCode);
+  clearOutput();
+  showView('lesson');
+  updateMobileNavActive('lessons');
+}
+
+function renderLessonDoc(mod, lesson) {
+  const doc = document.getElementById('lesson-doc');
+
+  let html =
+    '<div class="lesson-breadcrumb">' + mod.icon + ' ' + mod.title + ' <span>/ ' + lesson.title + '</span></div>' +
+    '<div class="lesson-title">' + lesson.title + '</div>' +
+    '<div class="lesson-subtitle">' + lesson.subtitle + '</div>';
+
+  lesson.content.forEach(block => {
+    if (block.type === 'section') {
+      html += '<div class="lesson-section"><h3>' + block.title + '</h3>' + block.body + '</div>';
+    } else if (block.type === 'concept') {
+      html += '<div class="concept-block">' + block.text + '</div>';
+    } else if (block.type === 'info') {
+      html += '<div class="info-block"><div class="info-label">⚡ ' + block.label + '</div>' + block.text + '</div>';
+    } else if (block.type === 'example') {
+      const escaped = block.code
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+      const highlighted = syntaxHL(escaped);
+      const safeCode = JSON.stringify(block.code);
+      html +=
+        '<div class="example-code">' +
+          '<div class="example-code-header">' +
+            '<span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>' +
+            '<span style="margin-left:6px;flex:1">' + block.label + '</span>' +
+            '<button class="load-to-editor-btn" onclick="loadExampleToEditor(' + safeCode + ')">→ EDITOR</button>' +
+          '</div>' +
+          '<pre>' + highlighted + '</pre>' +
+        '</div>';
+    }
+  });
+
+  // Nav buttons
+  const allLessons = CURRICULUM.flatMap(m => m.lessons.map(l => Object.assign({}, l, { modId: m.id })));
+  const idx = allLessons.findIndex(l => l.id === lesson.id);
+  const prev = allLessons[idx - 1];
+  const next = allLessons[idx + 1];
+  const isComplete = progress[lesson.id];
+
+  html += '<div class="lesson-nav-buttons">';
+  if (prev) html += '<button class="lesson-nav-btn" onclick="openLesson(\'' + prev.modId + '\',\'' + prev.id + '\')">← PREV</button>';
+  html += '<div class="spacer-auto"></div>';
+  if (!isComplete) {
+    html += '<button class="lesson-nav-btn complete" onclick="markComplete(\'' + lesson.id + '\')">✓ MARK COMPLETE</button>';
+  } else {
+    html += '<button class="lesson-nav-btn" style="color:var(--green);border-color:var(--green);opacity:0.6" disabled>✓ COMPLETE</button>';
+  }
+  if (next) html += '<button class="lesson-nav-btn primary" onclick="openLesson(\'' + next.modId + '\',\'' + next.id + '\')">NEXT →</button>';
+  html += '</div>';
+
+  doc.innerHTML = html;
+  doc.scrollTop = 0;
+}
+
+function syntaxHL(code) {
+  return code
+    .replace(/\b(def|class|return|if|elif|else|for|while|in|not|and|or|import|from|as|try|except|finally|raise|with|lambda|yield|pass|break|continue|True|False|None|global|nonlocal|del|async|await)\b/g, '<span class="kw">$1</span>')
+    .replace(/(#[^\n<]*)/g, '<span class="cmt">$1</span>')
+    .replace(/(&quot;[^&]*?&quot;)/g, '<span class="str">$1</span>')
+    .replace(/\b(\d+\.?\d*)\b/g, '<span class="num">$1</span>')
+    .replace(/\b(print|input|len|range|int|str|float|bool|list|dict|set|tuple|type|sum|max|min|sorted|map|filter|zip|enumerate|open|isinstance|hasattr|getattr|setattr|repr|format|reversed|abs|round)\b/g, '<span class="fn">$1</span>');
+}
+
+function loadExampleToEditor(code) {
+  lessonEditor.setValue(code);
+  lessonEditor.focus();
+}
+
+// ============================================================
+// CODE EXECUTION
+// ============================================================
+async function runCode() {
+  if (!pyodide) return;
+  const btn = document.getElementById('run-btn');
+  btn.disabled = true;
+  const term = document.getElementById('output-terminal');
+  term.innerHTML = '<div class="out-line info">[ EXECUTING ]</div>';
+  term.classList.add('active-terminal');
+  document.querySelectorAll('.active-terminal').forEach(t => { if (t !== term) t.classList.remove('active-terminal'); });
+
+  await executeCode(lessonEditor.getValue(), term);
+  term.classList.remove('active-terminal');
+  btn.disabled = false;
+}
+
+async function runSandbox() {
+  if (!pyodide) return;
+  const btn = document.getElementById('sandbox-run-btn');
+  btn.disabled = true;
+  const term = document.getElementById('sandbox-terminal');
+  term.innerHTML = '<div class="out-line info">[ EXECUTING ]</div>';
+  term.classList.add('active-terminal');
+  document.querySelectorAll('.active-terminal').forEach(t => { if (t !== term) t.classList.remove('active-terminal'); });
+
+  await executeCode(sandboxEditor.getValue(), term);
+  term.classList.remove('active-terminal');
+  btn.disabled = false;
+}
+
+async function executeCode(code, terminal) {
+  try {
+    pyodide.runPython('_stdout.clear(); _stderr.clear()');
+
+    // Set up JS-side input callback for Python to call
+    pyodide.globals.set('_js_get_input', (prompt) => {
+      return requestInput(String(prompt || ''));
+    });
+
+    // Inject an async-aware input() override before user code
+    var inputOverride = [
+      'import builtins, js',
+      'from pyodide.ffi import to_js',
+      'async def _async_input(prompt=""):',
+      '    result = await js._js_get_input(str(prompt))',
+      '    return str(result)',
+      'builtins.input = _async_input',
+    ].join('\n');
+
+    var fullCode = inputOverride + '\n\n' + code;
+    await pyodide.runPythonAsync(fullCode);
+
+    var out = pyodide.runPython('_stdout.getvalue()');
+    var err = pyodide.runPython('_stderr.getvalue()');
+    renderOutput(terminal, out, err);
+  } catch(e) {
+    renderOutput(terminal, '', String(e));
+  }
+}
+
+function renderOutput(terminal, stdout, stderr) {
+  // Remove the EXECUTING line
+  const execLine = terminal.querySelector('.info');
+  if (execLine) execLine.remove();
+
+  let hasOutput = false;
+
+  if (stdout && stdout.trim() !== '') {
+    stdout.split('\n').forEach(line => {
+      const d = document.createElement('div');
+      d.className = 'out-line stdout';
+      d.textContent = line;
+      terminal.appendChild(d);
+    });
+    hasOutput = true;
+  }
+
+  if (stderr && stderr.trim() !== '') {
+    stderr.split('\n').forEach(line => {
+      if (!line.trim()) return;
+      const d = document.createElement('div');
+      d.className = 'out-line stderr';
+      d.textContent = line;
+      terminal.appendChild(d);
+    });
+    hasOutput = true;
+  }
+
+  if (!hasOutput) {
+    const d = document.createElement('div');
+    d.className = 'out-line info';
+    d.textContent = '[ No output ]';
+    terminal.appendChild(d);
+  }
+
+  terminal.scrollTop = terminal.scrollHeight;
+}
+
+function clearOutput() {
+  const t = document.getElementById('output-terminal');
+  t.innerHTML = '<div class="out-line prompt">// output appears here — Ctrl+Enter to run</div>';
+}
+function clearSandboxOutput() {
+  const t = document.getElementById('sandbox-terminal');
+  t.innerHTML = '<div class="out-line prompt">// output appears here — Ctrl+Enter to run</div>';
+}
+function resetCode() {
+  if (currentLesson) { lessonEditor.setValue(currentLesson.lesson.starterCode); clearOutput(); }
+}
+function clearSandbox() {
+  sandboxEditor.setValue(''); clearSandboxOutput();
+}
+function loadSnippet(key) {
+  sandboxEditor.setValue(SNIPPETS[key] || '');
+  clearSandboxOutput();
+  sandboxEditor.focus();
+}
+
+// ============================================================
+// VIEWS
+// ============================================================
+function showView(name) {
+  currentView = name;
+  const views = ['welcome', 'lesson', 'sandbox', 'progress'];
+  views.forEach(v => {
+    const el = document.getElementById('view-' + v);
+    el.style.display = 'none';
+  });
+  const target = document.getElementById('view-' + name);
+  if (name === 'lesson') target.style.display = 'flex';
+  else if (name === 'sandbox') target.style.display = 'flex';
+  else target.style.display = 'block';
+
+  if (name === 'progress') renderProgressView();
+  if (name === 'sandbox') {
+    clearSandboxOutput();
+    setTimeout(() => sandboxEditor.refresh(), 50);
+  }
+  if (name === 'lesson') setTimeout(() => lessonEditor.refresh(), 50);
+
+  const sni = document.getElementById('sandbox-nav-item');
+  if (sni) sni.classList.toggle('active', name === 'sandbox');
+}
+
+function showProgressView() { showView('progress'); }
+function openFirstLesson() {
+  const m = CURRICULUM[0];
+  openLesson(m.id, m.lessons[0].id);
+}
+
+// ============================================================
+// PROGRESS
+// ============================================================
+function loadProgress() {
+  try { progress = JSON.parse(localStorage.getItem('pydojo_v2') || '{}'); }
+  catch(e) { progress = {}; }
+}
+function saveProgress() {
+  localStorage.setItem('pydojo_v2', JSON.stringify(progress));
+}
+function markComplete(lessonId) {
+  progress[lessonId] = true;
+  saveProgress();
+  buildLessonTree();
+  updateHeaderProgress();
+  if (currentLesson) renderLessonDoc(currentLesson.mod, currentLesson.lesson);
+  document.querySelectorAll('.lesson-item').forEach(el => el.classList.remove('active'));
+  const el = document.getElementById('litem-' + lessonId);
+  if (el) { el.classList.add('active'); }
+}
+function updateHeaderProgress() {
+  const total = CURRICULUM.flatMap(m => m.lessons).length;
+  const done = Object.keys(progress).length;
+  document.getElementById('header-progress').textContent = done + ' / ' + total + ' COMPLETE';
+}
+function renderProgressView() {
+  const all = CURRICULUM.flatMap(m => m.lessons);
+  const total = all.length;
+  const done = all.filter(l => progress[l.id]).length;
+  const pct = total ? Math.round(done / total * 100) : 0;
+  const modsDone = CURRICULUM.filter(m => m.lessons.every(l => progress[l.id])).length;
+
+  document.getElementById('progress-stats').innerHTML =
+    '<div class="stat-card"><div class="stat-card-label">LESSONS DONE</div><div class="stat-card-value cyan">' + done + '</div></div>' +
+    '<div class="stat-card"><div class="stat-card-label">TOTAL LESSONS</div><div class="stat-card-value">' + total + '</div></div>' +
+    '<div class="stat-card"><div class="stat-card-label">COMPLETION</div><div class="stat-card-value green">' + pct + '%</div></div>' +
+    '<div class="stat-card"><div class="stat-card-label">MODULES DONE</div><div class="stat-card-value amber">' + modsDone + '</div></div>';
+
+  document.getElementById('progress-modules').innerHTML = CURRICULUM.map(mod => {
+    const doneMod = mod.lessons.filter(l => progress[l.id]).length;
+    const pctMod = mod.lessons.length ? Math.round(doneMod / mod.lessons.length * 100) : 0;
+    const chips = mod.lessons.map(l =>
+      '<div class="pm-lesson-chip ' + (progress[l.id] ? 'done' : '') + '" onclick="openLesson(\'' + mod.id + '\',\'' + l.id + '\')">' +
+        (progress[l.id] ? '✓ ' : '○ ') + l.title +
+      '</div>'
+    ).join('');
+    return '<div class="progress-module-card">' +
+      '<div class="pm-header">' +
+        '<span class="pm-icon">' + mod.icon + '</span>' +
+        '<span class="pm-title">' + mod.title + '</span>' +
+        '<span class="pm-count">' + doneMod + '/' + mod.lessons.length + '</span>' +
+      '</div>' +
+      '<div class="pm-bar-bg"><div class="pm-bar-fill" style="width:' + pctMod + '%"></div></div>' +
+      '<div class="pm-lessons">' + chips + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+// ============================================================
+// SIDEBAR + MOBILE
+// ============================================================
+function switchSidebarTab(tab) {
+  document.getElementById('tab-lessons').classList.toggle('active', tab === 'lessons');
+  document.getElementById('tab-progress').classList.toggle('active', tab === 'progress');
+  const scroll = document.getElementById('sidebar-scroll');
+  scroll.style.display = tab === 'lessons' ? 'block' : 'none';
+  if (tab === 'progress') showProgressView();
+}
+function toggleSidebar() {
+  const sb = document.getElementById('sidebar');
+  const ov = document.getElementById('sidebar-overlay');
+  sb.classList.toggle('open');
+  const open = sb.classList.contains('open');
+  ov.style.opacity = open ? '1' : '0';
+  ov.style.pointerEvents = open ? 'all' : 'none';
+}
+function closeSidebar() {
+  const sb = document.getElementById('sidebar');
+  const ov = document.getElementById('sidebar-overlay');
+  sb.classList.remove('open');
+  ov.style.opacity = '0';
+  ov.style.pointerEvents = 'none';
+}
+function mobileSwitchTab(tab) {
+  updateMobileNavActive(tab);
+  if (tab === 'sandbox') showView('sandbox');
+  else if (tab === 'progress') showView('progress');
+  else toggleSidebar();
+}
+function updateMobileNavActive(tab) {
+  ['lessons','sandbox','progress'].forEach(t => {
+    const btn = document.getElementById('mnav-' + t);
+    if (btn) btn.classList.toggle('active', t === tab);
+  });
+}
+window.addEventListener('resize', () => {
+  const mob = document.getElementById('mob-menu-btn');
+  if (mob) mob.style.display = window.innerWidth <= 768 ? 'block' : 'none';
+});
+window.addEventListener('load', initPyodide);
+
+</script>
 </body>
 </html>
