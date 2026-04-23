@@ -910,6 +910,7 @@ body::before {
 .input-submit:hover { background: var(--cyan-glow); }
 .out-line.input-echo { color: var(--cyan-dim); }
 .out-line.prompt { color: var(--cyan); }
+.input-prompt-label { color: var(--cyan); font-family: var(--mono); font-size: 13px; white-space: pre; }
 
 </style>
 </head>
@@ -1076,8 +1077,8 @@ let sandboxEditor = null;
 let currentLesson = null;
 let progress = {};
 let currentView = 'welcome';
-let inputQueue = [];
 let inputResolve = null;
+let _stdoutBuf = '', _stderrBuf = '', _runHasOutput = false;
 
 // ============================================================
 // PYODIDE INIT
@@ -1108,24 +1109,21 @@ async function initPyodide() {
 
     pyodide = await loadPyodide();
 
-    // Setup stdout/stderr capture + async input bridge
-    pyodide.globals.set('_js_input_callback', async (prompt) => {
-      return await requestInput(prompt);
-    });
-
+    // Wire stdout/stderr to stream directly to the terminal, and override input()
     var _pySetup = [
-      'import sys, io',
-      'class _Capture:',
-      '    def __init__(self): self.buf = []',
+      'import sys, js, builtins',
+      'class _StreamOut:',
+      '    def __init__(self, fn): self._fn = fn',
       '    def write(self, t):',
-      '        if t: self.buf.append(t)',
+      '        if t: self._fn(t)',
       '    def flush(self): pass',
-      '    def getvalue(self): return "".join(self.buf)',
-      '    def clear(self): self.buf.clear()',
-      '_stdout = _Capture()',
-      '_stderr = _Capture()',
-      'sys.stdout = _stdout',
-      'sys.stderr = _stderr',
+      '    def isatty(self): return False',
+      'sys.stdout = _StreamOut(js._js_write_stdout)',
+      'sys.stderr = _StreamOut(js._js_write_stderr)',
+      'async def _async_input(prompt=""):',
+      '    result = await js._js_get_input(str(prompt))',
+      '    return str(result)',
+      'builtins.input = _async_input',
     ].join('\n');
     pyodide.runPython(_pySetup);
 
@@ -1148,13 +1146,22 @@ function requestInput(prompt) {
     const term = document.querySelector('.active-terminal');
     if (!term) { resolve(''); return; }
 
-    // Show prompt line
-    appendToTerminal(term, 'prompt', String(prompt || ''));
+    _runHasOutput = true;
 
-    // Create inline input row
+    // Flush any partial stdout line so it appears before the input prompt
+    if (_stdoutBuf) {
+      appendLine(term, 'stdout', _stdoutBuf);
+      _stdoutBuf = '';
+    }
+
+    const promptStr = String(prompt || '');
+    const safePrompt = promptStr.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+    // Create inline input row with the prompt text embedded before the caret
     const row = document.createElement('div');
     row.className = 'input-row';
     row.innerHTML =
+      (safePrompt ? '<span class="input-prompt-label">' + safePrompt + '</span>' : '') +
       '<span class="input-caret">▶</span>' +
       '<input type="text" class="terminal-input" autocomplete="off" spellcheck="false" />' +
       '<button class="input-submit">ENTER</button>';
@@ -1166,26 +1173,59 @@ function requestInput(prompt) {
 
     const submit = () => {
       const val = inp.value;
-      // Replace row with echoed value
       row.remove();
-      appendToTerminal(term, 'input-echo', (prompt || '') + val);
+      // Echo the full line (prompt + typed value) so the terminal reads naturally
+      appendLine(term, 'input-echo', promptStr + val);
       inputResolve = null;
       resolve(val);
     };
 
-    inp.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') submit();
-    });
+    inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') submit(); });
     row.querySelector('.input-submit').addEventListener('click', submit);
   });
 }
 
-function appendToTerminal(term, cls, text) {
+function appendLine(term, cls, text) {
   const d = document.createElement('div');
   d.className = 'out-line ' + cls;
   d.textContent = text;
   term.appendChild(d);
   term.scrollTop = term.scrollHeight;
+}
+
+// ============================================================
+// STREAMING OUTPUT — called by Python sys.stdout / sys.stderr
+// ============================================================
+window._js_write_stdout = function(text) {
+  const term = document.querySelector('.active-terminal');
+  if (!term || !text) return;
+  _runHasOutput = true;
+  _stdoutBuf += text;
+  let nl;
+  while ((nl = _stdoutBuf.indexOf('\n')) !== -1) {
+    appendLine(term, 'stdout', _stdoutBuf.slice(0, nl));
+    _stdoutBuf = _stdoutBuf.slice(nl + 1);
+  }
+};
+
+window._js_write_stderr = function(text) {
+  const term = document.querySelector('.active-terminal');
+  if (!term || !text) return;
+  _runHasOutput = true;
+  _stderrBuf += text;
+  let nl;
+  while ((nl = _stderrBuf.indexOf('\n')) !== -1) {
+    const line = _stderrBuf.slice(0, nl);
+    _stderrBuf = _stderrBuf.slice(nl + 1);
+    if (line.trim()) appendLine(term, 'stderr', line);
+  }
+};
+
+window._js_get_input = (prompt) => requestInput(String(prompt || ''));
+
+function flushStreams(term) {
+  if (_stdoutBuf) { appendLine(term, 'stdout', _stdoutBuf); _stdoutBuf = ''; }
+  if (_stderrBuf && _stderrBuf.trim()) { appendLine(term, 'stderr', _stderrBuf); _stderrBuf = ''; }
 }
 
 // ============================================================
@@ -1416,71 +1456,33 @@ async function runSandbox() {
 }
 
 async function executeCode(code, terminal) {
+  _runHasOutput = false;
+  _stdoutBuf = '';
+  _stderrBuf = '';
+
+  // input() is async in Pyodide's browser context; rewrite bare calls to await-ed calls
+  // so users can write `name = input("prompt")` without explicit await
+  const runCode = code.replace(/\binput\s*\(/g, 'await input(');
+
   try {
-    pyodide.runPython('_stdout.clear(); _stderr.clear()');
-
-    // Set up JS-side input callback for Python to call
-    pyodide.globals.set('_js_get_input', (prompt) => {
-      return requestInput(String(prompt || ''));
-    });
-
-    // Inject an async-aware input() override before user code
-    var inputOverride = [
-      'import builtins, js',
-      'from pyodide.ffi import to_js',
-      'async def _async_input(prompt=""):',
-      '    result = await js._js_get_input(str(prompt))',
-      '    return str(result)',
-      'builtins.input = _async_input',
-    ].join('\n');
-
-    var fullCode = inputOverride + '\n\n' + code;
-    await pyodide.runPythonAsync(fullCode);
-
-    var out = pyodide.runPython('_stdout.getvalue()');
-    var err = pyodide.runPython('_stderr.getvalue()');
-    renderOutput(terminal, out, err);
+    await pyodide.runPythonAsync(runCode);
   } catch(e) {
-    renderOutput(terminal, '', String(e));
+    flushStreams(terminal);
+    _runHasOutput = true;
+    String(e).split('\n').forEach(line => {
+      if (line.trim()) appendLine(terminal, 'stderr', line);
+    });
   }
-}
 
-function renderOutput(terminal, stdout, stderr) {
-  // Remove the EXECUTING line
-  const execLine = terminal.querySelector('.info');
+  flushStreams(terminal);
+
+  // Remove the [ EXECUTING ] status indicator
+  const execLine = terminal.querySelector('.out-line.info');
   if (execLine) execLine.remove();
 
-  let hasOutput = false;
-
-  if (stdout && stdout.trim() !== '') {
-    stdout.split('\n').forEach(line => {
-      const d = document.createElement('div');
-      d.className = 'out-line stdout';
-      d.textContent = line;
-      terminal.appendChild(d);
-    });
-    hasOutput = true;
+  if (!_runHasOutput) {
+    appendLine(terminal, 'info', '[ No output ]');
   }
-
-  if (stderr && stderr.trim() !== '') {
-    stderr.split('\n').forEach(line => {
-      if (!line.trim()) return;
-      const d = document.createElement('div');
-      d.className = 'out-line stderr';
-      d.textContent = line;
-      terminal.appendChild(d);
-    });
-    hasOutput = true;
-  }
-
-  if (!hasOutput) {
-    const d = document.createElement('div');
-    d.className = 'out-line info';
-    d.textContent = '[ No output ]';
-    terminal.appendChild(d);
-  }
-
-  terminal.scrollTop = terminal.scrollHeight;
 }
 
 function clearOutput() {
