@@ -493,6 +493,17 @@ body::before {
 .example-code pre .cmt { color: #546e7a; font-style: italic; }
 .example-code pre .var { color: var(--cyan); }
 
+/* HTML-string lesson content (mod6+) */
+.lesson-html-content h2 { color: var(--cyan); font-family: var(--display); font-size: 18px; letter-spacing: 2px; margin: 0 0 16px; }
+.lesson-html-content h3 { color: var(--text-primary); font-family: var(--display); font-size: 13px; letter-spacing: 2px; margin: 24px 0 10px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+.lesson-html-content p { color: var(--text-secondary); font-size: 14px; line-height: 1.7; margin: 0 0 12px; }
+.lesson-html-content p strong { color: var(--cyan); }
+.lesson-html-content p code, .lesson-html-content li code { background: rgba(0,255,255,0.07); color: var(--cyan); padding: 2px 6px; border-radius: 3px; font-size: 12px; }
+.lesson-html-content pre { background: var(--bg-code); border: 1px solid var(--border); border-radius: 4px; padding: 16px; overflow-x: auto; margin: 12px 0; }
+.lesson-html-content pre code { background: none; color: var(--text-primary); font-size: 13px; line-height: 1.6; padding: 0; }
+.lesson-html-content .tip { background: rgba(0,255,255,0.06); border-left: 3px solid var(--cyan-dim); padding: 12px 16px; border-radius: 0 4px 4px 0; margin: 20px 0; font-size: 13px; color: var(--text-secondary); }
+.lesson-html-content .tip code { background: rgba(0,255,255,0.1); color: var(--cyan); padding: 1px 5px; border-radius: 3px; }
+
 .lesson-nav-buttons {
   display: flex; gap: 12px; margin-top: 32px; padding-top: 24px;
   border-top: 1px solid var(--border);
@@ -1608,7 +1619,7 @@ const CHALLENGES = {
       { label: "finds [101, 3] in room/floor text",  code: "assert extract_numbers('Room 101, Floor 3') == [101, 3]" },
       { label: "returns list of ints not strings",   code: "result = extract_numbers('abc 5 def'); assert result == [5] and isinstance(result[0], int)" }
     ]
-  }
+  },
 
   "l7-0": {
     xp: 55,
@@ -2322,7 +2333,7 @@ function openLesson(modId, lessonId) {
   if (list) { list.style.display = 'block'; tog.classList.add('open'); }
 
   renderLessonDoc(mod, lesson);
-  lessonEditor.setValue(lesson.starterCode);
+  lessonEditor.setValue(lesson.starterCode || '# Start coding here\n');
   clearOutput();
   showView('lesson');
   updateMobileNavActive('lessons');
@@ -2338,33 +2349,37 @@ function renderLessonDoc(mod, lesson) {
   let html =
     '<div class="lesson-breadcrumb">' + mod.icon + ' ' + mod.title + ' <span>/ ' + lesson.title + '</span></div>' +
     '<div class="lesson-title">' + lesson.title + '</div>' +
-    '<div class="lesson-subtitle">' + lesson.subtitle + '</div>';
+    (lesson.subtitle ? '<div class="lesson-subtitle">' + lesson.subtitle + '</div>' : '');
 
-  lesson.content.forEach(block => {
-    if (block.type === 'section') {
-      html += '<div class="lesson-section"><h3>' + block.title + '</h3>' + block.body + '</div>';
-    } else if (block.type === 'concept') {
-      html += '<div class="concept-block">' + block.text + '</div>';
-    } else if (block.type === 'info') {
-      html += '<div class="info-block"><div class="info-label">⚡ ' + block.label + '</div>' + block.text + '</div>';
-    } else if (block.type === 'example') {
-      const escaped = block.code
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;');
-      const highlighted = syntaxHL(escaped);
-      const safeCode = JSON.stringify(block.code);
-      html +=
-        '<div class="example-code">' +
-          '<div class="example-code-header">' +
-            '<span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>' +
-            '<span style="margin-left:6px;flex:1">' + block.label + '</span>' +
-            '<button class="load-to-editor-btn" onclick="loadExampleToEditor(' + safeCode + ')">→ EDITOR</button>' +
-          '</div>' +
-          '<pre>' + highlighted + '</pre>' +
-        '</div>';
-    }
-  });
+  if (typeof lesson.content === 'string') {
+    html += '<div class="lesson-html-content">' + lesson.content + '</div>';
+  } else {
+    lesson.content.forEach(block => {
+      if (block.type === 'section') {
+        html += '<div class="lesson-section"><h3>' + block.title + '</h3>' + block.body + '</div>';
+      } else if (block.type === 'concept') {
+        html += '<div class="concept-block">' + block.text + '</div>';
+      } else if (block.type === 'info') {
+        html += '<div class="info-block"><div class="info-label">⚡ ' + block.label + '</div>' + block.text + '</div>';
+      } else if (block.type === 'example') {
+        const escaped = block.code
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;');
+        const highlighted = syntaxHL(escaped);
+        const safeCode = JSON.stringify(block.code);
+        html +=
+          '<div class="example-code">' +
+            '<div class="example-code-header">' +
+              '<span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>' +
+              '<span style="margin-left:6px;flex:1">' + block.label + '</span>' +
+              '<button class="load-to-editor-btn" onclick="loadExampleToEditor(' + safeCode + ')">→ EDITOR</button>' +
+            '</div>' +
+            '<pre>' + highlighted + '</pre>' +
+          '</div>';
+      }
+    });
+  }
 
   // Nav buttons
   const allLessons = CURRICULUM.flatMap(m => m.lessons.map(l => Object.assign({}, l, { modId: m.id })));
