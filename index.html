@@ -912,6 +912,259 @@ body::before {
 .out-line.prompt { color: var(--cyan); }
 .input-prompt-label { color: var(--cyan); font-family: var(--mono); font-size: 13px; white-space: pre; }
 
+/* ===== GAMIFICATION — HEADER ===== */
+.header-xp-block {
+  display: flex; align-items: center; gap: 10px;
+  padding: 4px 12px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+}
+.header-level-badge {
+  font-family: var(--display);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--amber);
+  letter-spacing: 2px;
+  text-shadow: 0 0 8px rgba(255,170,0,0.4);
+  white-space: nowrap;
+}
+.header-xp-bar-wrap {
+  width: 70px; height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.header-xp-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--amber), var(--green));
+  border-radius: 2px;
+  transition: width 0.6s ease;
+  box-shadow: 0 0 6px rgba(255,170,0,0.5);
+}
+.header-xp-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.header-streak {
+  display: flex; align-items: center; gap: 4px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--amber);
+  padding: 4px 10px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  white-space: nowrap;
+}
+.streak-fire { font-size: 13px; }
+
+/* ===== CHALLENGE TAB BAR ===== */
+.lesson-tab-bar {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.lesson-tab-btn {
+  flex: 1;
+  padding: 10px 8px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-align: center;
+  cursor: pointer;
+  background: none; border: none;
+  color: var(--text-muted);
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+}
+.lesson-tab-btn:hover { color: var(--cyan); background: var(--cyan-deep); }
+.lesson-tab-btn.active { color: var(--cyan); border-bottom-color: var(--cyan); }
+.lesson-tab-btn.challenge-tab { color: var(--amber-dim); }
+.lesson-tab-btn.challenge-tab:hover { color: var(--amber); background: rgba(255,170,0,0.06); }
+.lesson-tab-btn.challenge-tab.active { color: var(--amber); border-bottom-color: var(--amber); }
+.challenge-tab-badge {
+  display: inline-block;
+  background: var(--amber);
+  color: var(--bg-void);
+  font-size: 8px;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 8px;
+  margin-left: 5px;
+  vertical-align: middle;
+}
+.challenge-tab-badge.done { background: var(--green); }
+
+/* ===== CHALLENGE PANEL ===== */
+.challenge-panel {
+  display: none;
+  flex-direction: column;
+  padding: 20px;
+  overflow-y: auto;
+  flex: 1;
+}
+.challenge-panel.visible { display: flex; }
+.challenge-panel::-webkit-scrollbar { width: 3px; }
+.challenge-panel::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.challenge-title {
+  font-family: var(--display);
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: var(--amber);
+  text-shadow: 0 0 8px rgba(255,170,0,0.3);
+  margin-bottom: 6px;
+}
+.challenge-xp-tag {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--green);
+  background: var(--green-glow);
+  border: 1px solid var(--green-dim);
+  border-radius: 3px;
+  padding: 2px 8px;
+  margin-bottom: 14px;
+}
+.challenge-desc {
+  font-family: var(--body);
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--text-primary);
+  white-space: pre-wrap;
+  margin-bottom: 18px;
+}
+.challenge-desc code {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--cyan);
+  background: var(--cyan-deep);
+  padding: 1px 5px;
+  border-radius: 2px;
+}
+
+/* ===== HINTS ===== */
+.hints-section { margin-bottom: 18px; }
+.hints-header {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 8px;
+}
+.hints-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+}
+.hint-unlock-btn {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 1px;
+  padding: 3px 10px;
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.hint-unlock-btn:hover { border-color: var(--amber-dim); color: var(--amber); }
+.hint-item {
+  padding: 8px 12px;
+  background: rgba(255,170,0,0.05);
+  border-left: 2px solid var(--amber-dim);
+  border-radius: 0 3px 3px 0;
+  margin-bottom: 6px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text-secondary);
+  white-space: pre-wrap;
+  animation: hint-appear 0.3s ease;
+}
+@keyframes hint-appear { from { opacity:0; transform: translateY(-4px); } to { opacity:1; transform: none; } }
+
+/* ===== TEST RESULTS ===== */
+.test-results-section { margin-top: 4px; }
+.test-results-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+.test-item {
+  display: flex; align-items: flex-start; gap: 8px;
+  padding: 7px 10px;
+  border-radius: 3px;
+  margin-bottom: 4px;
+  font-family: var(--mono);
+  font-size: 12px;
+  border: 1px solid transparent;
+}
+.test-item.pass {
+  background: rgba(57,255,20,0.06);
+  border-color: rgba(57,255,20,0.15);
+  color: var(--green-dim);
+}
+.test-item.fail {
+  background: rgba(255,51,102,0.06);
+  border-color: rgba(255,51,102,0.15);
+  color: var(--red);
+}
+.test-item.pending { color: var(--text-muted); border-color: var(--border); }
+.test-icon { flex-shrink: 0; width: 14px; }
+.test-label { flex: 1; }
+.test-msg { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+.run-tests-btn {
+  margin-top: 14px;
+  width: 100%;
+  padding: 9px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 2px;
+  background: rgba(255,170,0,0.08);
+  border: 1px solid var(--amber-dim);
+  color: var(--amber);
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.run-tests-btn:hover { background: rgba(255,170,0,0.15); border-color: var(--amber); }
+.run-tests-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.challenge-success {
+  padding: 12px;
+  background: rgba(57,255,20,0.08);
+  border: 1px solid var(--green-dim);
+  border-radius: 3px;
+  color: var(--green);
+  font-family: var(--mono);
+  font-size: 12px;
+  text-align: center;
+  margin-top: 10px;
+  animation: hint-appear 0.4s ease;
+}
+
+/* ===== XP TOAST ===== */
+#xp-toast {
+  position: fixed;
+  bottom: 80px; right: 24px;
+  background: var(--bg-panel);
+  border: 1px solid var(--green-dim);
+  border-radius: 4px;
+  padding: 12px 20px;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--green);
+  box-shadow: 0 0 20px rgba(57,255,20,0.2);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.3s, transform 0.3s;
+  pointer-events: none;
+  z-index: 8000;
+}
+#xp-toast.show { opacity: 1; transform: none; }
+
 </style>
 </head>
 <body>
@@ -928,8 +1181,18 @@ body::before {
 <div id="app">
   <header class="app-header">
     <div class="header-logo">PYTHON<span>DOJO</span></div>
-    <div class="header-version">v1.0</div>
+    <div class="header-version">v2.0</div>
     <div class="header-spacer"></div>
+    <!-- XP + Level -->
+    <div class="header-xp-block">
+      <span class="header-level-badge" id="header-level">LVL 1 INITIATE</span>
+      <div class="header-xp-bar-wrap"><div class="header-xp-bar-fill" id="header-xp-bar" style="width:0%"></div></div>
+      <span class="header-xp-label" id="header-xp-label">0 XP</span>
+    </div>
+    <!-- Streak -->
+    <div class="header-streak" id="header-streak">
+      <span class="streak-fire">🔥</span><span id="streak-count">0</span>
+    </div>
     <div class="header-progress-mini" id="header-progress">0 / 0 COMPLETE</div>
     <div class="header-status">
       <div class="status-dot"></div>
@@ -938,6 +1201,8 @@ body::before {
     <!-- Mobile hamburger -->
     <button id="mob-menu-btn" onclick="toggleSidebar()" style="display:none;background:none;border:none;color:var(--cyan);font-size:20px;cursor:pointer;margin-left:8px;">☰</button>
   </header>
+  <!-- XP award toast -->
+  <div id="xp-toast">+0 XP — CHALLENGE COMPLETE!</div>
 
   <div class="app-body">
     <!-- SIDEBAR -->
@@ -987,7 +1252,30 @@ body::before {
 
       <!-- LESSON VIEW -->
       <div class="lesson-view" id="view-lesson" style="display:none;">
-        <div class="lesson-doc" id="lesson-doc"></div>
+        <div class="lesson-doc" id="lesson-doc-wrap" style="display:flex;flex-direction:column;overflow:hidden;">
+          <div class="lesson-tab-bar">
+            <button class="lesson-tab-btn active" id="ltab-lesson" onclick="switchLessonTab('lesson')">📖 LESSON</button>
+            <button class="lesson-tab-btn challenge-tab" id="ltab-challenge" onclick="switchLessonTab('challenge')">⚡ CHALLENGE <span class="challenge-tab-badge" id="challenge-badge">XP</span></button>
+          </div>
+          <div id="lesson-doc" style="flex:1;overflow-y:auto;"></div>
+          <div class="challenge-panel" id="challenge-panel">
+            <div class="challenge-title">⚡ CHALLENGE</div>
+            <div class="challenge-xp-tag" id="challenge-xp-tag">+50 XP</div>
+            <div class="challenge-desc" id="challenge-desc">Load a lesson to see the challenge.</div>
+            <div class="hints-section">
+              <div class="hints-header">
+                <span class="hints-label">HINTS</span>
+                <button class="hint-unlock-btn" id="hint-btn" onclick="unlockHint()">UNLOCK HINT</button>
+              </div>
+              <div id="hints-container"></div>
+            </div>
+            <div class="test-results-section">
+              <div class="test-results-label">TEST CASES</div>
+              <div id="test-results-container"></div>
+            </div>
+            <button class="run-tests-btn" id="run-tests-btn" onclick="runTests()">⚡ RUN TESTS</button>
+          </div>
+        </div>
         <div class="editor-panel" id="editor-panel">
           <div class="editor-topbar">
             <span class="editor-label">EDITOR</span>
@@ -1066,6 +1354,209 @@ body::before {
 
 <script>
 const CURRICULUM = [{"id": "mod0", "title": "FOUNDATIONS", "icon": "🔧", "lessons": [{"id": "l0-0", "title": "Welcome to Python", "subtitle": "What Python is, why it matters, and your first program.", "starterCode": "# Welcome to PythonDojo!\n# Let's write your very first Python program.\n\nprint(\"Hello, World!\")\nprint(\"Welcome to PythonDojo!\")\n\n# Try changing the message above and hit RUN!", "content": [{"type": "section", "title": "WHAT IS PYTHON?", "body": "<p>Python is a <strong>high-level, interpreted programming language</strong> created by Guido van Rossum in 1991. It is designed to be readable and straightforward — almost like pseudocode that actually runs.</p><p>CS50P uses Python because it lets you focus on <strong>problem solving</strong> rather than wrestling with syntax. Python powers everything from web apps to data science, AI, and automation.</p>"}, {"type": "concept", "text": "In Python, you do not need to declare types, manage memory, or add semicolons. The interpreter handles that. You write clean code — Python figures out the rest."}, {"type": "section", "title": "YOUR FIRST PROGRAM", "body": "<p>Every Python journey starts with <code>print()</code> — a built-in function that outputs text to the console.</p>"}, {"type": "example", "label": "EXAMPLE — print()", "code": "print(\"Hello, World!\")\nprint(\"Python is awesome!\")\nprint(42)\nprint(3.14)"}, {"type": "section", "title": "RUNNING CODE", "body": "<p>The <strong>editor on the right</strong> is your workspace. Write Python code, hit <strong>RUN</strong>, and the output terminal shows results instantly. The Python runtime runs <strong>entirely in your browser</strong>.</p>"}, {"type": "info", "label": "CS50P CONNECTION", "text": "This mirrors Week 0 of CS50P. David Malan starts with print() and builds from there. Every lesson in this Dojo follows the same CS50P progression."}]}, {"id": "l0-1", "title": "Variables & Data Types", "subtitle": "Storing data in named containers. Strings, integers, floats, and booleans.", "starterCode": "# VARIABLES & DATA TYPES\nname = \"Jordan\"      # str\nage = 25             # int\nheight = 5.9         # float\nis_learning = True   # bool\n\nprint(\"Name:\", name)\nprint(\"Age:\", age)\nprint(\"Height:\", height)\nprint(\"Learning Python?\", is_learning)\n\nprint(type(name))\nprint(type(age))\nprint(type(height))\nprint(type(is_learning))", "content": [{"type": "section", "title": "VARIABLES", "body": "<p>A <strong>variable</strong> is a named container for data. In Python, you create one with the <code>=</code> assignment operator. No <code>var</code>, no <code>let</code>, no type declaration — just a name and a value.</p>"}, {"type": "example", "label": "ASSIGNMENT", "code": "city = \"Denver\"\npopulation = 715522\nelevation = 5280.0\nis_capital = False\nprint(city, population, elevation, is_capital)"}, {"type": "section", "title": "THE FOUR BASIC TYPES", "body": "<p><strong>str</strong> — Text in quotes. <code>\"hello\"</code> or <code>'hello'</code> both work.</p><p><strong>int</strong> — Whole numbers. <code>42</code>, <code>-7</code>, <code>1000000</code>.</p><p><strong>float</strong> — Numbers with decimals. <code>3.14</code>, <code>-0.5</code>.</p><p><strong>bool</strong> — Only <code>True</code> or <code>False</code>. Used for logic.</p>"}, {"type": "concept", "text": "Python is dynamically typed — a variable's type is determined by its value, and it can change. x = 5 makes x an int. x = 'hello' now makes x a str. No error."}, {"type": "example", "label": "type() FUNCTION", "code": "x = 42\nprint(type(x))     # int\nx = \"forty-two\"\nprint(type(x))     # str\nx = True\nprint(type(x))     # bool"}, {"type": "info", "label": "NAMING CONVENTION", "text": "Python variable names use snake_case — all lowercase with underscores. first_name, not firstName. This is PEP 8, Python's official style guide."}]}, {"id": "l0-2", "title": "User Input & f-Strings", "subtitle": "Taking input from the user and building dynamic strings.", "starterCode": "# USER INPUT & F-STRINGS\n# input() pauses and waits for the user to type.\n# Hit RUN and type your answer in the prompt below!\n\nname = input(\"What is your name? \")\nprint(\"Hello,\", name + \"!\")\n\n# f-strings embed variables directly in text\ncity = \"Denver\"\nyear = 2025\nprint(f\"You are in {city} in {year}.\")\n\n# Math inside f-strings\nprice = 9.99\nqty = 3\ntotal = price * qty\nprint(f\"Total: ${total:.2f}\")", "content": [{"type": "section", "title": "GETTING INPUT", "body": "<p>The <code>input()</code> function pauses execution and waits for the user to type. Whatever they type is returned as a <strong>string</strong>. In this Dojo, a prompt dialog appears so you can type real input.</p>"}, {"type": "example", "label": "INPUT BASICS", "code": "name = input(\"Enter your name: \")\nprint(\"Hello,\", name)\n\n# input() ALWAYS returns a string\nage_str = input(\"How old are you? \")\nage = int(age_str)   # convert to int\nprint(\"Next year:\", age + 1)"}, {"type": "section", "title": "F-STRINGS", "body": "<p>F-strings (formatted string literals) are the modern way to embed variables in strings. Prefix with <code>f</code>, then use <code>{}</code> curly braces to insert any expression.</p>"}, {"type": "concept", "text": "f-strings evaluate the expression inside {} at runtime. You can put variables, math, method calls — anything that produces a value — inside the braces."}, {"type": "example", "label": "F-STRING FEATURES", "code": "name = \"Jordan\"\nscore = 95.7\nprint(f\"Player: {name}\")\nprint(f\"Score: {score:.1f}%\")\n\na, b = 10, 3\nprint(f\"{a} / {b} = {a/b:.2f}\")\n\n# Padding\nprint(f\"{\"LEFT\":<10}|{\"RIGHT\":>10}\")"}, {"type": "info", "label": "CS50P STYLE", "text": "CS50P teaches f-strings as the preferred way to format output. The older .format() method and % formatting still work, but f-strings are cleaner and faster."}]}]}, {"id": "mod1", "title": "CONTROL FLOW", "icon": "🔀", "lessons": [{"id": "l1-0", "title": "Conditionals", "subtitle": "Making decisions with if, elif, and else.", "starterCode": "# CONDITIONALS\ngrade = 85\n\nif grade >= 90:\n    print(\"A — Excellent!\")\nelif grade >= 80:\n    print(\"B — Good work!\")\nelif grade >= 70:\n    print(\"C — Passing.\")\nelse:\n    print(\"Below passing.\")\n\n# Try different grade values!\n\ntemp = 72\nis_raining = False\n\nif temp > 65 and not is_raining:\n    print(\"Great day for a walk!\")\nelse:\n    print(\"Maybe stay inside.\")", "content": [{"type": "section", "title": "IF STATEMENTS", "body": "<p>Conditionals let your program make decisions. Python uses <code>if</code>, <code>elif</code>, and <code>else</code> to branch logic based on conditions.</p><p>Indentation is <strong>everything</strong> in Python. A block under an <code>if</code> must be indented with 4 spaces.</p>"}, {"type": "example", "label": "BASIC CONDITIONAL", "code": "x = 10\n\nif x > 0:\n    print(\"Positive\")\nelif x < 0:\n    print(\"Negative\")\nelse:\n    print(\"Zero\")"}, {"type": "section", "title": "COMPARISON OPERATORS", "body": "<p><code>==</code> equal &nbsp;|&nbsp; <code>!=</code> not equal &nbsp;|&nbsp; <code>&gt;</code> greater &nbsp;|&nbsp; <code>&lt;</code> less &nbsp;|&nbsp; <code>&gt;=</code> at least &nbsp;|&nbsp; <code>&lt;=</code> at most</p><p>Combine with <strong>and</strong>, <strong>or</strong>, <strong>not</strong> — Python uses English words, not <code>&amp;&amp;</code>/<code>||</code>.</p>"}, {"type": "concept", "text": "Python uses indentation (whitespace) to define code blocks — not curly braces. This forces readable code. The standard is 4 spaces per indent level."}, {"type": "example", "label": "LOGICAL OPERATORS", "code": "age = 20\nhas_id = True\n\nif age >= 18 and has_id:\n    print(\"Access granted\")\n\nscore = 55\nif score < 0 or score > 100:\n    print(\"Invalid score\")\n\nlogged_in = False\nif not logged_in:\n    print(\"Please log in first\")"}, {"type": "info", "label": "CS50P PATTERN", "text": "CS50P uses conditionals heavily in the first problem sets — checking user input, validating data, branching flow. Nail this and the rest comes naturally."}]}, {"id": "l1-1", "title": "Loops", "subtitle": "Repeating actions with for and while loops.", "starterCode": "# LOOPS\n\n# FOR loop\nprint(\"--- FOR LOOP ---\")\nfor i in range(5):\n    print(f\"Count: {i}\")\n\n# Loop over a list\nfruits = [\"apple\", \"banana\", \"cherry\"]\nfor fruit in fruits:\n    print(f\"Fruit: {fruit}\")\n\n# WHILE loop\nprint(\"\\n--- WHILE LOOP ---\")\ncountdown = 5\nwhile countdown > 0:\n    print(f\"T-minus {countdown}...\")\n    countdown -= 1\nprint(\"Liftoff!\")", "content": [{"type": "section", "title": "FOR LOOPS", "body": "<p>A <code>for</code> loop iterates over a sequence — a range of numbers, a list, a string. Each iteration, the variable holds the current item.</p>"}, {"type": "example", "label": "FOR + RANGE", "code": "for i in range(5):       # 0,1,2,3,4\n    print(i)\n\nfor i in range(1, 6):    # 1,2,3,4,5\n    print(i)\n\nfor i in range(0, 20, 5): # 0,5,10,15\n    print(i)"}, {"type": "section", "title": "WHILE LOOPS", "body": "<p>A <code>while</code> loop keeps running as long as its condition is <code>True</code>. Use it when you do not know in advance how many iterations you need.</p>"}, {"type": "concept", "text": "Be careful with while loops — if the condition never becomes False, you have an infinite loop. Always make sure something inside the loop changes the condition."}, {"type": "example", "label": "BREAK & CONTINUE", "code": "# break — exit loop early\nfor i in range(10):\n    if i == 5:\n        break\n    print(i)   # 0 1 2 3 4\n\n# continue — skip this iteration\nfor i in range(10):\n    if i % 2 == 0:\n        continue\n    print(i)   # 1 3 5 7 9"}]}]}, {"id": "mod2", "title": "DATA STRUCTURES", "icon": "📦", "lessons": [{"id": "l2-0", "title": "Lists", "subtitle": "Ordered, mutable collections of items.", "starterCode": "# LISTS\nscores = [95, 87, 92, 78, 88]\n\nprint(\"First:\", scores[0])\nprint(\"Last:\", scores[-1])\nprint(\"Slice:\", scores[1:4])\n\nscores.append(100)\nprint(\"After append:\", scores)\n\nscores.sort(reverse=True)\nprint(\"Sorted desc:\", scores)\n\nprint(\"Count:\", len(scores))\nprint(\"Max:\", max(scores))\nprint(\"Min:\", min(scores))\nprint(\"Sum:\", sum(scores))", "content": [{"type": "section", "title": "WHAT IS A LIST?", "body": "<p>A <strong>list</strong> is an ordered collection of items. Items can be any type. Lists are <strong>mutable</strong> — you can add, remove, and change items after creation.</p>"}, {"type": "example", "label": "CREATING LISTS", "code": "colors = [\"red\", \"green\", \"blue\"]\nmixed = [1, \"hello\", True, 3.14]\nnested = [[1,2], [3,4], [5,6]]\nempty = []\n\nprint(colors)\nprint(len(mixed))"}, {"type": "section", "title": "INDEXING & SLICING", "body": "<p>Access items by their <strong>index</strong>. Python is <strong>zero-indexed</strong> — first item is at index <code>0</code>. Negative indices count from the end: <code>-1</code> is last.</p>"}, {"type": "example", "label": "LIST METHODS", "code": "items = [\"a\", \"b\", \"c\"]\nitems.append(\"d\")\nitems.insert(0, \"z\")\nitems.remove(\"b\")\npopped = items.pop()\nitems.sort()\nprint(items)\nprint(\"Popped:\", popped)"}, {"type": "info", "label": "CS50P NOTE", "text": "Lists are everywhere in CS50P. Week 2 (Loops) and Week 4 (Libraries) both lean heavily on list manipulation. Get comfortable with .append(), len(), and slicing."}]}, {"id": "l2-1", "title": "Dictionaries", "subtitle": "Key-value pairs for structured data.", "starterCode": "# DICTIONARIES\nstudent = {\n    \"name\": \"Jordan\",\n    \"age\": 25,\n    \"courses\": [\"CS50P\", \"Math\"],\n    \"gpa\": 3.8\n}\n\nprint(\"Name:\", student[\"name\"])\nprint(\"GPA:\", student.get(\"gpa\", 0.0))\n\n# Add / update\nstudent[\"email\"] = \"jordan@example.com\"\nstudent[\"age\"] = 26\n\n# Iterate\nfor key, value in student.items():\n    print(f\"  {key}: {value}\")\n\n# Check key exists\nif \"email\" in student:\n    print(\"Email:\", student[\"email\"])", "content": [{"type": "section", "title": "DICTIONARIES", "body": "<p>A <strong>dictionary</strong> stores data as <code>key: value</code> pairs. Keys must be unique and immutable. Values can be anything. Dicts are perfect for structured records.</p>"}, {"type": "example", "label": "CREATING DICTS", "code": "person = {\"name\": \"Alex\", \"age\": 30}\nconfig = dict(host=\"localhost\", port=5432)\ndata = {}\ndata[\"key\"] = \"value\"\nprint(person)\nprint(config)"}, {"type": "concept", "text": "dict.get(key, default) is safer than dict[key]. If the key does not exist, .get() returns the default instead of raising a KeyError."}, {"type": "example", "label": "DICT OPERATIONS", "code": "d = {\"a\": 1, \"b\": 2, \"c\": 3}\nprint(list(d.keys()))\nprint(list(d.values()))\nprint(list(d.items()))\nprint(d.get(\"z\", 0))\ndel d[\"a\"]\nprint(d)"}]}, {"id": "l2-2", "title": "Tuples & Sets", "subtitle": "Immutable sequences and unique collections.", "starterCode": "# TUPLES & SETS\n\n# Tuple — ordered, immutable\ncoords = (40.7128, -74.0060)\nprint(\"Lat:\", coords[0])\nprint(\"Lon:\", coords[1])\n\n# Unpack tuple\nlat, lon = coords\nprint(f\"Location: {lat}, {lon}\")\n\n# Set — unordered, unique items\ncolors = {\"red\", \"blue\", \"green\", \"red\", \"blue\"}\nprint(\"Unique colors:\", colors)\n\na = {1, 2, 3, 4}\nb = {3, 4, 5, 6}\nprint(\"Union:\", a | b)\nprint(\"Intersection:\", a & b)\nprint(\"Difference:\", a - b)", "content": [{"type": "section", "title": "TUPLES", "body": "<p>A <strong>tuple</strong> is like a list but <strong>immutable</strong> — once created, it cannot be changed. Use tuples for fixed data: coordinates, RGB values, records you should not modify.</p>"}, {"type": "example", "label": "TUPLE BASICS", "code": "point = (3, 4)\nx, y = point   # unpacking\nprint(x, y)\n\n# Tuples as dict keys (lists cannot be)\ngrid = {(0,0): \"origin\", (1,0): \"right\"}\nprint(grid[(0,0)])"}, {"type": "section", "title": "SETS", "body": "<p>A <strong>set</strong> is an unordered collection of <strong>unique</strong> items. Duplicates are automatically removed. Sets support fast membership testing and set math.</p>"}, {"type": "example", "label": "SET OPERATIONS", "code": "nums = {1, 2, 3, 2, 1}   # duplicates removed\nprint(nums)               # {1, 2, 3}\n\nnums.add(4)\nnums.discard(2)\nprint(nums)\n\nprint(3 in nums)   # fast membership test"}]}]}, {"id": "mod3", "title": "FUNCTIONS", "icon": "⚙️", "lessons": [{"id": "l3-0", "title": "Defining Functions", "subtitle": "Writing reusable blocks of code with def.", "starterCode": "# FUNCTIONS\n\ndef greet(name):\n    \"\"\"Say hello to someone.\"\"\"\n    return f\"Hello, {name}!\"\n\nprint(greet(\"Jordan\"))\n\n# Default parameter\ndef power(base, exponent=2):\n    return base ** exponent\n\nprint(power(5))       # 25\nprint(power(2, 10))   # 1024\n\n# Multiple return values\ndef min_max(numbers):\n    return min(numbers), max(numbers)\n\nlow, high = min_max([3, 1, 4, 1, 5, 9, 2, 6])\nprint(f\"Min: {low}, Max: {high}\")", "content": [{"type": "section", "title": "WHAT IS A FUNCTION?", "body": "<p>A <strong>function</strong> is a named block of code that performs a specific task. Define it once, call it anywhere. Functions are the core unit of reusable code in Python.</p>"}, {"type": "example", "label": "FUNCTION ANATOMY", "code": "def add(a, b):           # def + name + params\n    \"\"\"Add two numbers.\"\"\"  # docstring\n    result = a + b\n    return result\n\ntotal = add(3, 4)\nprint(total)  # 7"}, {"type": "section", "title": "PARAMETERS & DEFAULTS", "body": "<p><strong>Parameters</strong> are variables in the definition. <strong>Arguments</strong> are values passed at call time. Default values make parameters optional.</p>"}, {"type": "concept", "text": "A function without a return statement returns None. Always think about what your function should give back — that is what return is for."}, {"type": "example", "label": "SCOPE", "code": "x = 10  # global\n\ndef double_local():\n    x = 99  # local — does not affect global\n    return x * 2\n\nprint(double_local())  # 198\nprint(x)               # 10 unchanged"}, {"type": "info", "label": "CS50P EMPHASIS", "text": "CS50P Week 2 is almost entirely about functions. David Malan pushes hard: decompose programs into small, single-purpose functions. Each function should do one thing well."}]}, {"id": "l3-1", "title": "Lambda & Higher-Order", "subtitle": "Anonymous functions and functions that take functions.", "starterCode": "# LAMBDA & HIGHER-ORDER FUNCTIONS\n\nsquare = lambda x: x ** 2\nprint(square(5))\n\npeople = [\n    {\"name\": \"Alice\", \"age\": 30},\n    {\"name\": \"Bob\", \"age\": 25},\n    {\"name\": \"Charlie\", \"age\": 35},\n]\nsorted_people = sorted(people, key=lambda p: p[\"age\"])\nfor p in sorted_people:\n    print(f\"{p['name']}: {p['age']}\")\n\nnumbers = [1, 2, 3, 4, 5]\nsquared = list(map(lambda x: x**2, numbers))\nevens = list(filter(lambda x: x % 2 == 0, numbers))\nprint(\"Squared:\", squared)\nprint(\"Evens:\", evens)", "content": [{"type": "section", "title": "LAMBDA FUNCTIONS", "body": "<p>A <strong>lambda</strong> is a small anonymous function defined on a single line. It can take any number of arguments but only has one expression, which is automatically returned.</p>"}, {"type": "example", "label": "LAMBDA SYNTAX", "code": "add = lambda x, y: x + y\nprint(add(3, 4))  # 7\n\nwords = [\"banana\", \"apple\", \"cherry\", \"kiwi\"]\nwords.sort(key=lambda w: len(w))\nprint(words)  # sorted by length"}, {"type": "section", "title": "MAP & FILTER", "body": "<p><code>map(func, iterable)</code> applies a function to every item. <code>filter(func, iterable)</code> keeps items where the function returns <code>True</code>.</p>"}, {"type": "concept", "text": "In modern Python, list comprehensions are often preferred over map/filter for readability. But knowing them helps you understand the functional programming style used in many libraries."}]}]}, {"id": "mod4", "title": "PYTHONIC CODE", "icon": "🐍", "lessons": [{"id": "l4-0", "title": "List Comprehensions", "subtitle": "Concise, expressive list construction in one line.", "starterCode": "# LIST COMPREHENSIONS\n\n# Traditional loop\nsquares_old = []\nfor x in range(10):\n    squares_old.append(x ** 2)\n\n# Comprehension\nsquares = [x**2 for x in range(10)]\nprint(\"Squares:\", squares)\n\n# With condition\neven_sq = [x**2 for x in range(20) if x % 2 == 0]\nprint(\"Even squares:\", even_sq)\n\n# String processing\nwords = [\"  hello  \", \"  world  \", \"  python  \"]\nclean = [w.strip().upper() for w in words]\nprint(\"Clean:\", clean)\n\n# Dict comprehension\nlengths = {w: len(w) for w in [\"cat\", \"elephant\", \"dog\"]}\nprint(\"Lengths:\", lengths)", "content": [{"type": "section", "title": "THE PATTERN", "body": "<p>A list comprehension condenses a loop-and-append pattern into one expressive line. Syntax: <code>[expression for item in iterable]</code> or with a filter: <code>[expression for item in iterable if condition]</code>.</p>"}, {"type": "example", "label": "BREAKDOWN", "code": "# Goal: squares of even numbers 0-20\n\n# Loop version\nresult = []\nfor n in range(21):\n    if n % 2 == 0:\n        result.append(n ** 2)\n\n# Comprehension version\nresult = [n**2 for n in range(21) if n % 2 == 0]\nprint(result)"}, {"type": "concept", "text": "List comprehensions are a hallmark of idiomatic Python. If you find yourself writing a loop just to build a list, a comprehension is usually cleaner."}, {"type": "example", "label": "DICT & SET COMPREHENSIONS", "code": "# Dict comprehension\nsquare_map = {n: n**2 for n in range(6)}\nprint(square_map)\n\n# Set comprehension (unique values)\nletters = {c for c in \"hello world\" if c != \" \"}\nprint(letters)"}]}, {"id": "l4-1", "title": "Exception Handling", "subtitle": "Writing robust code that handles errors gracefully.", "starterCode": "# EXCEPTION HANDLING\n\ndef safe_divide(a, b):\n    try:\n        return a / b\n    except ZeroDivisionError:\n        print(\"Cannot divide by zero!\")\n        return None\n\nprint(safe_divide(10, 2))\nprint(safe_divide(10, 0))\n\ndef parse_int(s):\n    try:\n        return int(s)\n    except ValueError:\n        print(f\"Not a valid integer: {s!r}\")\n        return 0\n\nprint(parse_int(\"42\"))\nprint(parse_int(\"abc\"))", "content": [{"type": "section", "title": "WHY HANDLE EXCEPTIONS?", "body": "<p>Exceptions are errors at runtime. Without handling, they crash your program. With <code>try/except</code>, you catch the error, respond gracefully, and keep running.</p>"}, {"type": "example", "label": "TRY/EXCEPT/ELSE/FINALLY", "code": "try:\n    value = int(input(\"Enter a number: \"))\nexcept ValueError as e:\n    print(f\"Bad input: {e}\")\n    value = 0\nelse:\n    print(\"Got:\", value)  # only if no exception\nfinally:\n    print(\"Done.\")         # always runs"}, {"type": "concept", "text": "Never catch bare except: — always name the specific exception type. Catching everything hides bugs you want to know about."}, {"type": "example", "label": "RAISING EXCEPTIONS", "code": "def set_age(age):\n    if not isinstance(age, int):\n        raise TypeError(\"Age must be an integer\")\n    if age < 0 or age > 150:\n        raise ValueError(f\"Age {age} out of range\")\n    return age\n\ntry:\n    set_age(-5)\nexcept ValueError as e:\n    print(f\"ValueError: {e}\")"}, {"type": "info", "label": "CS50P WEEK 3", "text": "CS50P Week 3 is dedicated entirely to exceptions. The pattern: try the risky operation, except the specific error, give a useful message. This is how professional Python looks."}]}]}, {"id": "mod5", "title": "OOP", "icon": "🏗️", "lessons": [{"id": "l5-0", "title": "Classes & Objects", "subtitle": "Object-Oriented Programming fundamentals in Python.", "starterCode": "# CLASSES & OBJECTS\n\nclass Student:\n    school = \"CS50\"  # class variable\n\n    def __init__(self, name, grade):\n        self.name = name\n        self.grade = grade\n\n    def greet(self):\n        return f\"Hi, I am {self.name} from {self.school}!\"\n\n    def letter_grade(self):\n        if self.grade >= 90: return \"A\"\n        elif self.grade >= 80: return \"B\"\n        elif self.grade >= 70: return \"C\"\n        else: return \"F\"\n\n    def __str__(self):\n        return f\"Student({self.name}, {self.grade})\"\n\nalice = Student(\"Alice\", 92)\nbob = Student(\"Bob\", 78)\n\nprint(alice.greet())\nprint(f\"{bob.name} got a {bob.letter_grade()}\")\nprint(alice)", "content": [{"type": "section", "title": "THE CLASS CONCEPT", "body": "<p>A <strong>class</strong> is a template for creating objects. It defines what data (attributes) an object holds and what it can do (methods). An <strong>object</strong> (instance) is a specific realization of that template.</p>"}, {"type": "example", "label": "CLASS ANATOMY", "code": "class Car:\n    wheels = 4  # class variable\n\n    def __init__(self, make, model, year):\n        self.make = make\n        self.model = model\n        self.year = year\n\n    def describe(self):\n        return f\"{self.year} {self.make} {self.model}\"\n\nmy_car = Car(\"Toyota\", \"Camry\", 2023)\nprint(my_car.describe())"}, {"type": "concept", "text": "self refers to the current instance. Every method takes self as its first parameter. When you call obj.method(), Python automatically passes obj as self."}, {"type": "example", "label": "INHERITANCE", "code": "class Animal:\n    def __init__(self, name):\n        self.name = name\n    def speak(self):\n        return \"...\"\n\nclass Dog(Animal):\n    def speak(self):\n        return f\"{self.name} says Woof!\"\n\nclass Cat(Animal):\n    def speak(self):\n        return f\"{self.name} says Meow!\"\n\nfor pet in [Dog(\"Rex\"), Cat(\"Luna\")]:\n    print(pet.speak())"}, {"type": "info", "label": "CS50P WEEK 8", "text": "CS50P dedicates Week 8 entirely to OOP. Real-world Python is built on classes — Django models, dataclasses, Flask routes all use them."}]}]}];
+const CHALLENGES = {
+  "l0-0": {
+    xp: 30,
+    desc: "Create a variable called `message` set to the string `'Hello, World!'` and print it.",
+    starter: "# CHALLENGE — Hello, World!\n# Create the variable and print it\n\nmessage = ???\nprint(message)",
+    hints: [
+      "Assign a string using =:  message = 'Hello, World!'",
+      "Make sure capitalisation matches exactly: capital H, comma, space, capital W, exclamation mark.",
+      "message = \"Hello, World!\"\nprint(message)"
+    ],
+    tests: [
+      { label: "variable message exists",          code: "assert 'message' in dir()" },
+      { label: "message == 'Hello, World!'",        code: "assert message == 'Hello, World!'" },
+      { label: "output contains Hello, World!",     code: "assert 'Hello, World!' in _captured_output" }
+    ]
+  },
+  "l0-1": {
+    xp: 30,
+    desc: "Declare three variables:\n  • `name`  — a string (any name)\n  • `age`   — an integer\n  • `is_student` — the boolean `True`\n\nThen print all three.",
+    starter: "# CHALLENGE — Variables & Types\n\nname = \nage = \nis_student = \n\nprint(name)\nprint(age)\nprint(is_student)",
+    hints: [
+      "Strings go in quotes: name = 'Alice'",
+      "Integers have no quotes: age = 20",
+      "Booleans are capitalized: is_student = True"
+    ],
+    tests: [
+      { label: "name is a non-empty string",  code: "assert isinstance(name, str) and len(name) > 0" },
+      { label: "age is an integer",           code: "assert isinstance(age, int)" },
+      { label: "is_student is True",          code: "assert is_student is True" }
+    ]
+  },
+  "l0-2": {
+    xp: 40,
+    desc: "Given `name = 'Alice'` and `score = 95`, write a single f-string print that outputs exactly:\n\n  Alice scored 95 out of 100!",
+    starter: "name = 'Alice'\nscore = 95\n\n# Write your f-string print below\nprint(f\"...\")",
+    hints: [
+      "f-strings embed variables with curly braces: f\"Hello, {name}\"",
+      "Include both variables: {name} and {score}",
+      "print(f\"{name} scored {score} out of 100!\")"
+    ],
+    tests: [
+      { label: "output contains 'Alice'",                    code: "assert 'Alice' in _captured_output" },
+      { label: "output contains '95'",                       code: "assert '95' in _captured_output" },
+      { label: "exact line: 'Alice scored 95 out of 100!'",  code: "assert 'Alice scored 95 out of 100!' in _captured_output" }
+    ]
+  },
+  "l1-0": {
+    xp: 50,
+    desc: "Write a function `letter_grade(score)` that returns:\n  • 'A'  for 90–100\n  • 'B'  for 80–89\n  • 'C'  for 70–79\n  • 'F'  for anything below 70",
+    starter: "def letter_grade(score):\n    # your code here\n    pass\n\nprint(letter_grade(95))  # A\nprint(letter_grade(83))  # B\nprint(letter_grade(71))  # C\nprint(letter_grade(55))  # F",
+    hints: [
+      "Use if / elif / else — check from highest threshold down.",
+      "if score >= 90: return 'A'",
+      "def letter_grade(score):\n    if score >= 90: return 'A'\n    elif score >= 80: return 'B'\n    elif score >= 70: return 'C'\n    else: return 'F'"
+    ],
+    tests: [
+      { label: "letter_grade(95) == 'A'", code: "assert letter_grade(95) == 'A'" },
+      { label: "letter_grade(85) == 'B'", code: "assert letter_grade(85) == 'B'" },
+      { label: "letter_grade(70) == 'C'", code: "assert letter_grade(70) == 'C'" },
+      { label: "letter_grade(60) == 'F'", code: "assert letter_grade(60) == 'F'" }
+    ]
+  },
+  "l1-1": {
+    xp: 50,
+    desc: "Write a function `sum_evens(n)` that returns the sum of all even numbers from 0 up to and including `n`.\n\nExample: sum_evens(10) → 30  (0+2+4+6+8+10)",
+    starter: "def sum_evens(n):\n    # your code here\n    pass\n\nprint(sum_evens(10))  # 30\nprint(sum_evens(6))   # 12\nprint(sum_evens(0))   # 0",
+    hints: [
+      "Use range() with a step of 2: range(0, n+1, 2)",
+      "Keep a running total: total = 0, then total += i in the loop.",
+      "def sum_evens(n):\n    total = 0\n    for i in range(0, n+1, 2):\n        total += i\n    return total"
+    ],
+    tests: [
+      { label: "sum_evens(10) == 30", code: "assert sum_evens(10) == 30" },
+      { label: "sum_evens(6)  == 12", code: "assert sum_evens(6)  == 12" },
+      { label: "sum_evens(0)  == 0",  code: "assert sum_evens(0)  == 0"  },
+      { label: "sum_evens(1)  == 0",  code: "assert sum_evens(1)  == 0"  }
+    ]
+  },
+  "l2-0": {
+    xp: 60,
+    desc: "Write a function `second_largest(numbers)` that returns the second largest unique value in the list.\n\nExample: second_largest([3,1,4,1,5,9,2,6]) → 6",
+    starter: "def second_largest(numbers):\n    # your code here\n    pass\n\nprint(second_largest([3,1,4,1,5,9,2,6]))  # 6\nprint(second_largest([10,5,8]))            # 8",
+    hints: [
+      "sorted() returns a sorted list in ascending order.",
+      "Use set() to remove duplicates first, then sort.",
+      "def second_largest(numbers):\n    unique = sorted(set(numbers))\n    return unique[-2]"
+    ],
+    tests: [
+      { label: "second_largest([3,1,4,1,5,9,2,6]) == 6", code: "assert second_largest([3,1,4,1,5,9,2,6]) == 6" },
+      { label: "second_largest([10,5,8]) == 8",          code: "assert second_largest([10,5,8]) == 8"          },
+      { label: "second_largest([1,2]) == 1",             code: "assert second_largest([1,2]) == 1"             }
+    ]
+  },
+  "l2-1": {
+    xp: 60,
+    desc: "Write a function `word_count(text)` that returns a dictionary mapping each word to how many times it appears.\n\nExample: word_count('the cat sat on the mat')\n  → {'the':2, 'cat':1, 'sat':1, 'on':1, 'mat':1}",
+    starter: "def word_count(text):\n    # your code here\n    pass\n\nresult = word_count('the cat sat on the mat')\nprint(result)",
+    hints: [
+      "Split the string into words: text.split()",
+      "Use dict.get(key, 0) to safely count: counts[word] = counts.get(word, 0) + 1",
+      "def word_count(text):\n    counts = {}\n    for word in text.split():\n        counts[word] = counts.get(word, 0) + 1\n    return counts"
+    ],
+    tests: [
+      { label: "counts 'the' twice",             code: "assert word_count('the cat the dog')['the'] == 2" },
+      { label: "counts 'cat' once",              code: "assert word_count('the cat the dog')['cat'] == 1" },
+      { label: "correct number of unique words", code: "assert len(word_count('a b c a')) == 3"           }
+    ]
+  },
+  "l2-2": {
+    xp: 50,
+    desc: "Write a function `unique_sorted(items)` that returns a sorted list of unique items.\n\nExample: unique_sorted([3,1,4,1,5,9,2,6,5]) → [1,2,3,4,5,6,9]",
+    starter: "def unique_sorted(items):\n    # your code here\n    pass\n\nprint(unique_sorted([3,1,4,1,5,9,2,6,5]))      # [1,2,3,4,5,6,9]\nprint(unique_sorted(['b','a','c','a']))          # ['a','b','c']",
+    hints: [
+      "set() removes duplicates automatically.",
+      "sorted() sorts any iterable and returns a list.",
+      "def unique_sorted(items):\n    return sorted(set(items))"
+    ],
+    tests: [
+      { label: "removes duplicates",   code: "assert unique_sorted([1,1,2]) == [1,2]"         },
+      { label: "returns sorted order", code: "assert unique_sorted([3,1,2]) == [1,2,3]"       },
+      { label: "handles strings",      code: "assert unique_sorted(['b','a','a']) == ['a','b']" }
+    ]
+  },
+  "l3-0": {
+    xp: 70,
+    desc: "Write a function `is_palindrome(s)` that returns `True` if `s` reads the same forwards and backwards (case-insensitive), `False` otherwise.\n\nExamples:\n  is_palindrome('racecar') → True\n  is_palindrome('hello')   → False\n  is_palindrome('Madam')   → True",
+    starter: "def is_palindrome(s):\n    # your code here\n    pass\n\nprint(is_palindrome('racecar'))  # True\nprint(is_palindrome('hello'))    # False\nprint(is_palindrome('Madam'))    # True",
+    hints: [
+      "Use .lower() to make the comparison case-insensitive.",
+      "Reverse a string with slicing: s[::-1]",
+      "def is_palindrome(s):\n    s = s.lower()\n    return s == s[::-1]"
+    ],
+    tests: [
+      { label: "is_palindrome('racecar') is True",          code: "assert is_palindrome('racecar') == True"  },
+      { label: "is_palindrome('hello') is False",           code: "assert is_palindrome('hello') == False"  },
+      { label: "case-insensitive: is_palindrome('Madam')",  code: "assert is_palindrome('Madam') == True"   },
+      { label: "single char is palindrome",                 code: "assert is_palindrome('a') == True"       }
+    ]
+  },
+  "l3-1": {
+    xp: 60,
+    desc: "Using `filter()` and `map()` with lambdas, build a list `result` that contains the squares of all even numbers from [1,2,3,4,5,6,7,8].\n\nExpected: result == [4, 16, 36, 64]",
+    starter: "numbers = [1, 2, 3, 4, 5, 6, 7, 8]\n\n# Use filter() then map() with lambda functions\nresult = list(map(lambda x: ???, filter(lambda x: ???, numbers)))\n\nprint(result)  # [4, 16, 36, 64]",
+    hints: [
+      "filter(lambda x: x % 2 == 0, numbers) keeps only even numbers.",
+      "map(lambda x: x**2, evens) squares each one.",
+      "result = list(map(lambda x: x**2, filter(lambda x: x % 2 == 0, numbers)))"
+    ],
+    tests: [
+      { label: "result == [4, 16, 36, 64]", code: "assert result == [4, 16, 36, 64]" },
+      { label: "result has 4 items",        code: "assert len(result) == 4"           }
+    ]
+  },
+  "l4-0": {
+    xp: 70,
+    desc: "Write a list comprehension `fizzbuzz` for numbers 1–20:\n  • 'FizzBuzz' if divisible by both 3 and 5\n  • 'Fizz'     if divisible by 3\n  • 'Buzz'     if divisible by 5\n  • str(n)     otherwise\n\nfizzbuzz[:5] → ['1','2','Fizz','4','Buzz']",
+    starter: "fizzbuzz = [\n    # your expression here\n    for n in range(1, 21)\n]\n\nprint(fizzbuzz)",
+    hints: [
+      "Use an inline conditional: 'A' if cond else 'B'",
+      "Chain conditions: 'FizzBuzz' if n%15==0 else 'Fizz' if n%3==0 else ...",
+      "fizzbuzz = ['FizzBuzz' if n%15==0 else 'Fizz' if n%3==0 else 'Buzz' if n%5==0 else str(n) for n in range(1,21)]"
+    ],
+    tests: [
+      { label: "fizzbuzz[0]  == '1'",        code: "assert fizzbuzz[0]  == '1'"        },
+      { label: "fizzbuzz[2]  == 'Fizz'",     code: "assert fizzbuzz[2]  == 'Fizz'"     },
+      { label: "fizzbuzz[4]  == 'Buzz'",     code: "assert fizzbuzz[4]  == 'Buzz'"     },
+      { label: "fizzbuzz[14] == 'FizzBuzz'", code: "assert fizzbuzz[14] == 'FizzBuzz'" },
+      { label: "list has 20 items",          code: "assert len(fizzbuzz) == 20"         }
+    ]
+  },
+  "l4-1": {
+    xp: 70,
+    desc: "Write a function `safe_divide(a, b)` that:\n  • Returns a / b (float) when b != 0\n  • Returns None when b == 0\n  • Returns None when either arg is not a number",
+    starter: "def safe_divide(a, b):\n    # your code here\n    pass\n\nprint(safe_divide(10, 2))   # 5.0\nprint(safe_divide(10, 0))   # None\nprint(safe_divide('x', 2))  # None",
+    hints: [
+      "Use try/except — catch ZeroDivisionError and TypeError separately.",
+      "Check types with isinstance(a, (int, float)).",
+      "def safe_divide(a, b):\n    try:\n        if not isinstance(a,(int,float)) or not isinstance(b,(int,float)):\n            raise TypeError\n        return a / b\n    except ZeroDivisionError:\n        return None\n    except TypeError:\n        return None"
+    ],
+    tests: [
+      { label: "safe_divide(10, 2)  == 5.0", code: "assert safe_divide(10, 2) == 5.0"    },
+      { label: "safe_divide(10, 0)  is None", code: "assert safe_divide(10, 0) is None"   },
+      { label: "safe_divide('x', 2) is None", code: "assert safe_divide('x', 2) is None"  }
+    ]
+  },
+  "l5-0": {
+    xp: 80,
+    desc: "Create a class `Rectangle` with:\n  • __init__(self, width, height)\n  • area()      → width * height\n  • perimeter() → 2 * (width + height)\n  • __str__     → 'Rectangle(w x h)'",
+    starter: "class Rectangle:\n    def __init__(self, width, height):\n        pass\n\n    def area(self):\n        pass\n\n    def perimeter(self):\n        pass\n\n    def __str__(self):\n        pass\n\nr = Rectangle(4, 6)\nprint(r.area())       # 24\nprint(r.perimeter())  # 20\nprint(r)              # Rectangle(4 x 6)",
+    hints: [
+      "In __init__: self.width = width; self.height = height",
+      "area returns self.width * self.height; perimeter returns 2*(self.width+self.height)",
+      "def __str__(self):\n    return f'Rectangle({self.width} x {self.height})'"
+    ],
+    tests: [
+      { label: "area of 4x6 == 24",            code: "assert Rectangle(4,6).area() == 24"                      },
+      { label: "perimeter of 4x6 == 20",        code: "assert Rectangle(4,6).perimeter() == 20"                 },
+      { label: "__str__ == 'Rectangle(4 x 6)'", code: "assert str(Rectangle(4,6)) == 'Rectangle(4 x 6)'"        },
+      { label: "area of 3x3 == 9",             code: "assert Rectangle(3,3).area() == 9"                       }
+    ]
+  }
+};
+
 const SNIPPETS = {"hello": "# Classic Hello World\nprint(\"Hello, World!\")\nprint(\"Welcome to PythonDojo!\")\n\nimport sys\nprint(f\"Python {sys.version.split()[0]}\")", "fibonacci": "# Fibonacci Sequence\ndef fibonacci(n):\n    a, b = 0, 1\n    result = []\n    for _ in range(n):\n        result.append(a)\n        a, b = b, a + b\n    return result\n\nprint(\"First 15 Fibonacci numbers:\")\nprint(fibonacci(15))", "list_comp": "# List Comprehensions\nnumbers = range(1, 21)\n\nsquares = [n**2 for n in numbers]\nprint(\"Squares:\", squares)\n\nevens = [n for n in numbers if n % 2 == 0]\nprint(\"Evens:\", evens)\n\nprimes = [n for n in numbers\n          if n > 1 and all(n % i != 0 for i in range(2, n))]\nprint(\"Primes:\", primes)", "cls": "# OOP — Bank Account\nclass BankAccount:\n    def __init__(self, owner, balance=0):\n        self.owner = owner\n        self.balance = balance\n        self.history = []\n\n    def deposit(self, amount):\n        self.balance += amount\n        self.history.append(f\"+${amount}\")\n        return self\n\n    def withdraw(self, amount):\n        if amount > self.balance:\n            raise ValueError(\"Insufficient funds\")\n        self.balance -= amount\n        self.history.append(f\"-${amount}\")\n        return self\n\n    def __str__(self):\n        return f\"Account({self.owner}, ${self.balance:.2f})\"\n\nacc = BankAccount(\"Jordan\", 100)\nacc.deposit(50).deposit(25).withdraw(30)\nprint(acc)\nprint(\"History:\", acc.history)", "exception": "# Exception Handling\ndef parse_age(value):\n    try:\n        age = int(value)\n        if age < 0 or age > 120:\n            raise ValueError(f\"Age {age} out of range\")\n        return age\n    except ValueError as e:\n        print(f\"  Error: {e}\")\n        return None\n\ncases = [\"25\", \"-5\", \"200\", \"abc\", \"18\"]\nfor case in cases:\n    result = parse_age(case)\n    if result is not None:\n        print(f\"  {case!r} -> {result}\")", "input_demo": "# Interactive Input Demo\n# Try entering different values!\n\nname = input(\"What is your name? \")\nage_str = input(\"How old are you? \")\n\ntry:\n    age = int(age_str)\n    print(f\"Hello, {name}! You are {age} years old.\")\n    print(f\"In 10 years you will be {age + 10}.\")\nexcept ValueError:\n    print(f\"Hello, {name}! {age_str!r} is not a valid age.\")"};
 
 // ============================================================
@@ -1079,6 +1570,14 @@ let progress = {};
 let currentView = 'welcome';
 let inputResolve = null;
 let _stdoutBuf = '', _stderrBuf = '', _runHasOutput = false;
+
+// Game state
+let xp = 0;
+let streak = 0;
+let lastPlayed = '';
+let xpEarned = {};    // lessonId -> true
+let hintsRevealed = {}; // lessonId -> count
+let currentLessonTab = 'lesson';
 
 // ============================================================
 // PYODIDE INIT
@@ -1229,6 +1728,316 @@ function flushStreams(term) {
 }
 
 // ============================================================
+// LEVELS
+// ============================================================
+const LEVELS = [
+  { min:    0, max:   99, rank: 'INITIATE',    num: 1 },
+  { min:  100, max:  299, rank: 'NOVICE',      num: 2 },
+  { min:  300, max:  599, rank: 'APPRENTICE',  num: 3 },
+  { min:  600, max:  999, rank: 'CODER',       num: 4 },
+  { min: 1000, max: 1499, rank: 'PYTHONISTA',  num: 5 },
+  { min: 1500, max: 99999,rank: 'MASTER',      num: 6 },
+];
+function getLevelInfo(totalXp) {
+  const lvl = LEVELS.find(l => totalXp >= l.min && totalXp <= l.max) || LEVELS[LEVELS.length-1];
+  const next = LEVELS[LEVELS.indexOf(lvl)+1];
+  const pct = next ? Math.round((totalXp - lvl.min) / (next.min - lvl.min) * 100) : 100;
+  return { ...lvl, pct, nextXp: next ? next.min : null };
+}
+
+// ============================================================
+// PROGRESS PERSISTENCE (game-aware)
+// ============================================================
+function loadProgress() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('pydojo_v3') || '{}');
+    progress      = saved.progress      || {};
+    xp            = saved.xp            || 0;
+    streak        = saved.streak        || 0;
+    lastPlayed    = saved.lastPlayed    || '';
+    xpEarned      = saved.xpEarned     || {};
+    hintsRevealed = saved.hintsRevealed || {};
+  } catch(e) {
+    progress = {}; xp = 0; streak = 0; lastPlayed = ''; xpEarned = {}; hintsRevealed = {};
+  }
+  checkStreak();
+}
+function saveProgress() {
+  localStorage.setItem('pydojo_v3', JSON.stringify({ progress, xp, streak, lastPlayed, xpEarned, hintsRevealed }));
+}
+
+// ============================================================
+// STREAK
+// ============================================================
+function checkStreak() {
+  const today = new Date().toISOString().slice(0,10);
+  if (!lastPlayed) { streak = 0; return; }
+  const diff = (new Date(today) - new Date(lastPlayed)) / 86400000;
+  if (diff > 1) streak = 0;
+}
+function touchStreak() {
+  const today = new Date().toISOString().slice(0,10);
+  if (lastPlayed !== today) {
+    const diff = lastPlayed ? (new Date(today) - new Date(lastPlayed)) / 86400000 : 1;
+    streak = diff <= 1 ? streak + 1 : 1;
+    lastPlayed = today;
+    saveProgress();
+  }
+  updateXPUI();
+}
+
+// ============================================================
+// XP + UI UPDATE
+// ============================================================
+function awardXP(lessonId, amount) {
+  if (xpEarned[lessonId]) return;
+  xpEarned[lessonId] = true;
+  xp += amount;
+  touchStreak();
+  saveProgress();
+  updateXPUI();
+  showXPToast(amount);
+}
+function updateXPUI() {
+  const info = getLevelInfo(xp);
+  document.getElementById('header-level').textContent = `LVL ${info.num} ${info.rank}`;
+  document.getElementById('header-xp-bar').style.width = info.pct + '%';
+  document.getElementById('header-xp-label').textContent = xp + ' XP';
+  document.getElementById('streak-count').textContent = streak;
+}
+function showXPToast(amount) {
+  const toast = document.getElementById('xp-toast');
+  toast.textContent = `+${amount} XP — CHALLENGE COMPLETE!`;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2800);
+}
+
+// ============================================================
+// CHALLENGE TAB SWITCHING
+// ============================================================
+function switchLessonTab(tab) {
+  currentLessonTab = tab;
+  document.getElementById('ltab-lesson').classList.toggle('active', tab === 'lesson');
+  document.getElementById('ltab-challenge').classList.toggle('active', tab === 'challenge');
+  document.getElementById('lesson-doc').style.display     = tab === 'lesson'    ? 'block' : 'none';
+  document.getElementById('challenge-panel').classList.toggle('visible', tab === 'challenge');
+}
+
+// ============================================================
+// LOAD CHALLENGE FOR CURRENT LESSON
+// ============================================================
+function loadChallenge(lessonId) {
+  const ch = CHALLENGES[lessonId];
+  const badge = document.getElementById('challenge-badge');
+  const ltab  = document.getElementById('ltab-challenge');
+
+  if (!ch) {
+    badge.textContent = '';
+    badge.style.display = 'none';
+    ltab.style.display = 'none';
+    return;
+  }
+
+  ltab.style.display = '';
+  const done = !!xpEarned[lessonId];
+  badge.textContent = done ? '✓' : `+${ch.xp} XP`;
+  badge.className = 'challenge-tab-badge' + (done ? ' done' : '');
+
+  document.getElementById('challenge-xp-tag').textContent = done
+    ? `✓ COMPLETED — ${ch.xp} XP EARNED`
+    : `+${ch.xp} XP on completion`;
+  document.getElementById('challenge-desc').textContent = ch.desc;
+
+  // Reset test results to pending state
+  const container = document.getElementById('test-results-container');
+  container.innerHTML = ch.tests.map((t, i) =>
+    `<div class="test-item pending" id="titem-${i}">
+       <span class="test-icon">○</span>
+       <div><div class="test-label">${escHtml(t.label)}</div></div>
+     </div>`
+  ).join('');
+
+  // Hints
+  renderHints(lessonId);
+
+  // Success message
+  const existing = document.getElementById('challenge-success-msg');
+  if (existing) existing.remove();
+  if (done) {
+    const msg = document.createElement('div');
+    msg.id = 'challenge-success-msg';
+    msg.className = 'challenge-success';
+    msg.textContent = '✓ You passed all tests and earned the XP for this challenge!';
+    document.getElementById('run-tests-btn').insertAdjacentElement('afterend', msg);
+  }
+
+  // Challenge starter code into editor (only on first load of lesson)
+  if (lessonEditor && lessonEditor.getValue().trim() === '' || currentLesson) {
+    // Don't overwrite; editor holds lesson starter or user's work
+  }
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ============================================================
+// HINTS
+// ============================================================
+function renderHints(lessonId) {
+  const ch = CHALLENGES[lessonId];
+  if (!ch) return;
+  const revealed = hintsRevealed[lessonId] || 0;
+  const container = document.getElementById('hints-container');
+  container.innerHTML = ch.hints.slice(0, revealed).map(h =>
+    `<div class="hint-item">${escHtml(h)}</div>`
+  ).join('');
+  const btn = document.getElementById('hint-btn');
+  btn.style.display = revealed >= ch.hints.length ? 'none' : '';
+}
+function unlockHint() {
+  if (!currentLesson) return;
+  const id = currentLesson.lesson.id;
+  const ch = CHALLENGES[id];
+  if (!ch) return;
+  const revealed = hintsRevealed[id] || 0;
+  if (revealed < ch.hints.length) {
+    hintsRevealed[id] = revealed + 1;
+    saveProgress();
+    renderHints(id);
+  }
+}
+
+// ============================================================
+// TEST RUNNER
+// ============================================================
+window._js_test_results = function(pyProxy) {
+  const data = pyProxy.toJs ? pyProxy.toJs({ dict_converter: Object.fromEntries }) : pyProxy;
+  const results = Array.isArray(data.results) ? data.results : [...data.results];
+  const allPassed = data.all_passed;
+  const lessonId = currentLesson ? currentLesson.lesson.id : null;
+  const ch = lessonId ? CHALLENGES[lessonId] : null;
+
+  results.forEach((r, i) => {
+    const el = document.getElementById('titem-' + i);
+    if (!el) return;
+    const passed = r.passed === true || r.get && r.get('passed');
+    const msg    = r.msg    || (r.get && r.get('msg')) || '';
+    const label  = r.label  || (r.get && r.get('label')) || '';
+    el.className = 'test-item ' + (passed ? 'pass' : 'fail');
+    el.innerHTML = `<span class="test-icon">${passed ? '✓' : '✗'}</span>
+      <div><div class="test-label">${escHtml(label)}</div>${msg ? `<div class="test-msg">${escHtml(String(msg))}</div>` : ''}</div>`;
+  });
+
+  if (allPassed && ch && lessonId) {
+    awardXP(lessonId, ch.xp);
+    progress[lessonId] = true;
+    saveProgress();
+    buildLessonTree();
+    updateHeaderProgress();
+
+    const existing = document.getElementById('challenge-success-msg');
+    if (!existing) {
+      const msg = document.createElement('div');
+      msg.id = 'challenge-success-msg';
+      msg.className = 'challenge-success';
+      msg.textContent = '✓ All tests passed! XP awarded.';
+      document.getElementById('run-tests-btn').insertAdjacentElement('afterend', msg);
+    }
+    // Refresh badge
+    loadChallenge(lessonId);
+  }
+};
+
+async function runTests() {
+  if (!pyodide || !currentLesson) return;
+  const lessonId = currentLesson.lesson.id;
+  const ch = CHALLENGES[lessonId];
+  if (!ch) return;
+
+  const btn = document.getElementById('run-tests-btn');
+  btn.disabled = true;
+  btn.textContent = '⏳ RUNNING...';
+
+  const term = document.getElementById('output-terminal');
+  term.innerHTML = '<div class="out-line info">[ RUNNING TESTS ]</div>';
+  term.classList.add('active-terminal');
+  document.querySelectorAll('.active-terminal').forEach(t => { if (t !== term) t.classList.remove('active-terminal'); });
+
+  _runHasOutput = false; _stdoutBuf = ''; _stderrBuf = '';
+
+  // Build test function defs — one per test case
+  const testFnDefs = ch.tests.map((t, i) => {
+    const indented = t.code.split('\n').map(l => '    ' + l).join('\n');
+    return `def _test_fn_${i}():\n${indented}`;
+  }).join('\n');
+
+  const testCalls = ch.tests.map((t, i) =>
+    `_run_test(${JSON.stringify(t.label)}, _test_fn_${i})`
+  ).join('\n');
+
+  const userCode = lessonEditor.getValue();
+
+  const fullCode = `
+import sys as _sys, io as _io
+from pyodide.ffi import to_js as _to_js
+
+# Capture stdout while user code runs, then stream it to terminal
+_cap = _io.StringIO()
+_real_out = _sys.stdout
+_sys.stdout = _cap
+
+${userCode}
+
+_sys.stdout = _real_out
+_captured_output = _cap.getvalue()
+for _ln in (_captured_output.rstrip('\\n').split('\\n') if _captured_output.strip() else []):
+    _real_out.write(_ln + '\\n')
+
+# Silent test runner
+_test_results = []
+def _run_test(label, fn):
+    old = _sys.stdout
+    _sys.stdout = _io.StringIO()
+    try:
+        fn()
+        _sys.stdout = old
+        _test_results.append({'label': label, 'passed': True, 'msg': ''})
+    except AssertionError as e:
+        _sys.stdout = old
+        _test_results.append({'label': label, 'passed': False, 'msg': str(e) or 'Assertion failed'})
+    except Exception as e:
+        _sys.stdout = old
+        _test_results.append({'label': label, 'passed': False, 'msg': type(e).__name__ + ': ' + str(e)})
+
+${testFnDefs}
+${testCalls}
+
+_all = all(r['passed'] for r in _test_results)
+js._js_test_results(_to_js({'results': _test_results, 'all_passed': _all}))
+`;
+
+  const runnable = fullCode.replace(/\binput\s*\(/g, 'await input(');
+
+  try {
+    await pyodide.runPythonAsync(runnable);
+  } catch(e) {
+    flushStreams(term);
+    _runHasOutput = true;
+    String(e).split('\n').forEach(line => { if (line.trim()) appendLine(term, 'stderr', line); });
+  }
+
+  flushStreams(term);
+  const execLine = term.querySelector('.out-line.info');
+  if (execLine) execLine.remove();
+  if (!_runHasOutput) appendLine(term, 'info', '[ No output ]');
+  term.classList.remove('active-terminal');
+
+  btn.disabled = false;
+  btn.textContent = '⚡ RUN TESTS';
+}
+
+// ============================================================
 // BOOT
 // ============================================================
 function bootApp() {
@@ -1238,6 +2047,7 @@ function bootApp() {
   initEditors();
   buildLessonTree();
   updateHeaderProgress();
+  updateXPUI();
   if (window.innerWidth <= 768) {
     document.getElementById('mob-menu-btn').style.display = 'block';
   }
@@ -1352,6 +2162,10 @@ function openLesson(modId, lessonId) {
   clearOutput();
   showView('lesson');
   updateMobileNavActive('lessons');
+
+  // Always start on LESSON tab and load challenge data
+  switchLessonTab('lesson');
+  loadChallenge(lessonId);
 }
 
 function renderLessonDoc(mod, lesson) {
@@ -1540,13 +2354,6 @@ function openFirstLesson() {
 // ============================================================
 // PROGRESS
 // ============================================================
-function loadProgress() {
-  try { progress = JSON.parse(localStorage.getItem('pydojo_v2') || '{}'); }
-  catch(e) { progress = {}; }
-}
-function saveProgress() {
-  localStorage.setItem('pydojo_v2', JSON.stringify(progress));
-}
 function markComplete(lessonId) {
   progress[lessonId] = true;
   saveProgress();
@@ -1569,10 +2376,13 @@ function renderProgressView() {
   const pct = total ? Math.round(done / total * 100) : 0;
   const modsDone = CURRICULUM.filter(m => m.lessons.every(l => progress[l.id])).length;
 
+  const lvlInfo = getLevelInfo(xp);
   document.getElementById('progress-stats').innerHTML =
     '<div class="stat-card"><div class="stat-card-label">LESSONS DONE</div><div class="stat-card-value cyan">' + done + '</div></div>' +
-    '<div class="stat-card"><div class="stat-card-label">TOTAL LESSONS</div><div class="stat-card-value">' + total + '</div></div>' +
     '<div class="stat-card"><div class="stat-card-label">COMPLETION</div><div class="stat-card-value green">' + pct + '%</div></div>' +
+    '<div class="stat-card"><div class="stat-card-label">TOTAL XP</div><div class="stat-card-value amber">' + xp + '</div></div>' +
+    '<div class="stat-card"><div class="stat-card-label">RANK</div><div class="stat-card-value" style="color:var(--amber)">' + lvlInfo.rank + '</div></div>' +
+    '<div class="stat-card"><div class="stat-card-label">STREAK</div><div class="stat-card-value" style="color:var(--red)">🔥 ' + streak + '</div></div>' +
     '<div class="stat-card"><div class="stat-card-label">MODULES DONE</div><div class="stat-card-value amber">' + modsDone + '</div></div>';
 
   document.getElementById('progress-modules').innerHTML = CURRICULUM.map(mod => {
