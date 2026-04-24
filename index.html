@@ -333,13 +333,19 @@ body::before {
 .lesson-doc {
   flex: 1;
   min-width: 0;
+  background: var(--bg-void);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+#lesson-doc {
+  flex: 1;
   overflow-y: auto;
   padding: 28px 32px;
-  background: var(--bg-void);
 }
-.lesson-doc::-webkit-scrollbar { width: 4px; }
-.lesson-doc::-webkit-scrollbar-track { background: transparent; }
-.lesson-doc::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+#lesson-doc::-webkit-scrollbar { width: 4px; }
+#lesson-doc::-webkit-scrollbar-track { background: transparent; }
+#lesson-doc::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
 .lesson-breadcrumb {
   font-family: var(--mono);
@@ -1252,12 +1258,12 @@ body::before {
 
       <!-- LESSON VIEW -->
       <div class="lesson-view" id="view-lesson" style="display:none;">
-        <div class="lesson-doc" id="lesson-doc-wrap" style="display:flex;flex-direction:column;overflow:hidden;">
+        <div class="lesson-doc" id="lesson-doc-wrap">
           <div class="lesson-tab-bar">
             <button class="lesson-tab-btn active" id="ltab-lesson" onclick="switchLessonTab('lesson')">📖 LESSON</button>
             <button class="lesson-tab-btn challenge-tab" id="ltab-challenge" onclick="switchLessonTab('challenge')">⚡ CHALLENGE <span class="challenge-tab-badge" id="challenge-badge">XP</span></button>
           </div>
-          <div id="lesson-doc" style="flex:1;overflow-y:auto;"></div>
+          <div id="lesson-doc"></div>
           <div class="challenge-panel" id="challenge-panel">
             <div class="challenge-title">⚡ CHALLENGE</div>
             <div class="challenge-xp-tag" id="challenge-xp-tag">+50 XP</div>
