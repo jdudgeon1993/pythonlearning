@@ -1024,6 +1024,10 @@ body::before {
   flex: 1;
 }
 .challenge-panel.visible { display: flex; }
+
+/* Amber accent on lesson doc when challenge tab is active */
+.lesson-tab-btn.challenge-tab.active ~ * .challenge-panel,
+#lesson-doc-wrap:has(#ltab-challenge.active) { border-left: 2px solid rgba(255,170,0,0.15); }
 .challenge-panel::-webkit-scrollbar { width: 3px; }
 .challenge-panel::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 .challenge-title {
@@ -1048,9 +1052,8 @@ body::before {
 .challenge-desc {
   font-family: var(--body);
   font-size: 14px;
-  line-height: 1.7;
+  line-height: 1.8;
   color: var(--text-primary);
-  white-space: pre-wrap;
   margin-bottom: 18px;
 }
 .challenge-desc code {
@@ -1276,7 +1279,10 @@ body::before {
           </div>
           <div id="lesson-doc"></div>
           <div class="challenge-panel" id="challenge-panel">
-            <div class="challenge-title">⚡ CHALLENGE</div>
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+              <div class="challenge-title" style="margin:0">⚡ CHALLENGE</div>
+              <button onclick="resetChallenge()" title="Reset to challenge starter code" style="margin-left:auto;font-family:var(--mono);font-size:9px;letter-spacing:1px;padding:3px 10px;background:none;border:1px solid var(--border);color:var(--text-muted);border-radius:2px;cursor:pointer;transition:all 0.2s" onmouseover="this.style.borderColor='var(--amber)';this.style.color='var(--amber)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-muted)'">↺ RESET</button>
+            </div>
             <div class="challenge-xp-tag" id="challenge-xp-tag">+50 XP</div>
             <div class="challenge-desc" id="challenge-desc">Load a lesson to see the challenge.</div>
             <div class="hints-section">
@@ -1287,7 +1293,7 @@ body::before {
               <div id="hints-container"></div>
             </div>
             <div class="test-results-section">
-              <div class="test-results-label">TEST CASES</div>
+              <div class="test-results-label">TEST CASES <span id="test-count-label" style="font-size:9px;margin-left:6px;letter-spacing:1px;transition:color 0.3s"></span></div>
               <div id="test-results-container"></div>
             </div>
             <button class="run-tests-btn" id="run-tests-btn" onclick="runTests()">⚡ RUN TESTS</button>
@@ -1295,7 +1301,8 @@ body::before {
         </div>
         <div class="editor-panel" id="editor-panel">
           <div class="editor-topbar">
-            <span class="editor-label">EDITOR</span>
+            <span class="editor-label" id="editor-mode-label">EDITOR</span>
+            <span style="font-family:var(--mono);font-size:9px;color:var(--text-muted);letter-spacing:1px;margin-left:4px">Ctrl+↵</span>
             <button class="editor-btn reset" onclick="resetCode()">RESET</button>
             <button class="editor-btn run" id="run-btn" onclick="runCode()">▶ RUN</button>
           </div>
@@ -1732,7 +1739,7 @@ const CHALLENGES = {
   },
 };
 
-const SNIPPETS = {"hello": "# Classic Hello World\nprint(\"Hello, World!\")\nprint(\"Welcome to PythonDojo!\")\n\nimport sys\nprint(f\"Python {sys.version.split()[0]}\")", "fibonacci": "# Fibonacci Sequence\ndef fibonacci(n):\n    a, b = 0, 1\n    result = []\n    for _ in range(n):\n        result.append(a)\n        a, b = b, a + b\n    return result\n\nprint(\"First 15 Fibonacci numbers:\")\nprint(fibonacci(15))", "list_comp": "# List Comprehensions\nnumbers = range(1, 21)\n\nsquares = [n**2 for n in numbers]\nprint(\"Squares:\", squares)\n\nevens = [n for n in numbers if n % 2 == 0]\nprint(\"Evens:\", evens)\n\nprimes = [n for n in numbers\n          if n > 1 and all(n % i != 0 for i in range(2, n))]\nprint(\"Primes:\", primes)", "cls": "# OOP — Bank Account\nclass BankAccount:\n    def __init__(self, owner, balance=0):\n        self.owner = owner\n        self.balance = balance\n        self.history = []\n\n    def deposit(self, amount):\n        self.balance += amount\n        self.history.append(f\"+${amount}\")\n        return self\n\n    def withdraw(self, amount):\n        if amount > self.balance:\n            raise ValueError(\"Insufficient funds\")\n        self.balance -= amount\n        self.history.append(f\"-${amount}\")\n        return self\n\n    def __str__(self):\n        return f\"Account({self.owner}, ${self.balance:.2f})\"\n\nacc = BankAccount(\"Jordan\", 100)\nacc.deposit(50).deposit(25).withdraw(30)\nprint(acc)\nprint(\"History:\", acc.history)", "exception": "# Exception Handling\ndef parse_age(value):\n    try:\n        age = int(value)\n        if age < 0 or age > 120:\n            raise ValueError(f\"Age {age} out of range\")\n        return age\n    except ValueError as e:\n        print(f\"  Error: {e}\")\n        return None\n\ncases = [\"25\", \"-5\", \"200\", \"abc\", \"18\"]\nfor case in cases:\n    result = parse_age(case)\n    if result is not None:\n        print(f\"  {case!r} -> {result}\")", "input_demo": "# Interactive Input Demo\n# Try entering different values!\n\nname = input(\"What is your name? \")\nage_str = input(\"How old are you? \")\n\ntry:\n    age = int(age_str)\n    print(f\"Hello, {name}! You are {age} years old.\")\n    print(f\"In 10 years you will be {age + 10}.\")\nexcept ValueError:\n    print(f\"Hello, {name}! {age_str!r} is not a valid age.\")"};
+const SNIPPETS = {"hello": "# Classic Hello World\nprint(\"Hello, World!\")\nprint(\"Welcome to PythonDojo!\")\n\nimport sys\nprint(f\"Python {sys.version.split()[0]}\")", "fibonacci": "# Fibonacci Sequence\ndef fibonacci(n):\n    a, b = 0, 1\n    result = []\n    for _ in range(n):\n        result.append(a)\n        a, b = b, a + b\n    return result\n\nprint(\"First 15 Fibonacci numbers:\")\nprint(fibonacci(15))", "list_comp": "# List Comprehensions\nnumbers = range(1, 21)\n\nsquares = [n**2 for n in numbers]\nprint(\"Squares:\", squares)\n\nevens = [n for n in numbers if n % 2 == 0]\nprint(\"Evens:\", evens)\n\nprimes = [n for n in numbers\n          if n > 1 and all(n % i != 0 for i in range(2, n))]\nprint(\"Primes:\", primes)", "class": "# OOP — Bank Account\nclass BankAccount:\n    def __init__(self, owner, balance=0):\n        self.owner = owner\n        self.balance = balance\n        self.history = []\n\n    def deposit(self, amount):\n        self.balance += amount\n        self.history.append(f\"+${amount}\")\n        return self\n\n    def withdraw(self, amount):\n        if amount > self.balance:\n            raise ValueError(\"Insufficient funds\")\n        self.balance -= amount\n        self.history.append(f\"-${amount}\")\n        return self\n\n    def __str__(self):\n        return f\"Account({self.owner}, ${self.balance:.2f})\"\n\nacc = BankAccount(\"Jordan\", 100)\nacc.deposit(50).deposit(25).withdraw(30)\nprint(acc)\nprint(\"History:\", acc.history)", "file_sim": "# Dictionary Example\nstudent = {\n    'name': 'Jordan',\n    'age': 25,\n    'courses': ['CS50P', 'Math'],\n    'gpa': 3.8\n}\n\n# Access values\nprint('Name:', student['name'])\nprint('GPA:', student.get('gpa', 0.0))\n\n# Add / update entries\nstudent['email'] = 'jordan@example.com'\nstudent['age'] = 26\n\n# Iterate over key-value pairs\nfor key, value in student.items():\n    print(f'  {key}: {value}')\n\n# Membership test\nif 'email' in student:\n    print('Email found:', student['email'])\n\n# Dict comprehension — square map\nsquare_map = {n: n**2 for n in range(1, 6)}\nprint('Squares:', square_map)", "exception": "# Exception Handling\ndef parse_age(value):\n    try:\n        age = int(value)\n        if age < 0 or age > 120:\n            raise ValueError(f\"Age {age} out of range\")\n        return age\n    except ValueError as e:\n        print(f\"  Error: {e}\")\n        return None\n\ncases = [\"25\", \"-5\", \"200\", \"abc\", \"18\"]\nfor case in cases:\n    result = parse_age(case)\n    if result is not None:\n        print(f\"  {case!r} -> {result}\")", "input_demo": "# Interactive Input Demo\n# Try entering different values!\n\nname = input(\"What is your name? \")\nage_str = input(\"How old are you? \")\n\ntry:\n    age = int(age_str)\n    print(f\"Hello, {name}! You are {age} years old.\")\n    print(f\"In 10 years you will be {age + 10}.\")\nexcept ValueError:\n    print(f\"Hello, {name}! {age_str!r} is not a valid age.\")"};
 
 // ============================================================
 // RUNTIME STATE
@@ -1991,11 +1998,44 @@ function showXPToast(amount) {
 // CHALLENGE TAB SWITCHING
 // ============================================================
 function switchLessonTab(tab) {
+  // When switching to challenge tab, load challenge starter if editor is unchanged
+  if (tab === 'challenge' && currentLesson && lessonEditor) {
+    const ch = CHALLENGES[currentLesson.lesson.id];
+    if (ch && ch.starter) {
+      const current = lessonEditor.getValue();
+      const lessonStarter = currentLesson.lesson.starterCode || '';
+      if (current === lessonStarter || current.trim() === '' || current.trim() === '# Select a lesson to begin') {
+        lessonEditor.setValue(ch.starter);
+      }
+    }
+  }
+
   currentLessonTab = tab;
   document.getElementById('ltab-lesson').classList.toggle('active', tab === 'lesson');
   document.getElementById('ltab-challenge').classList.toggle('active', tab === 'challenge');
   document.getElementById('lesson-doc').style.display     = tab === 'lesson'    ? 'block' : 'none';
   document.getElementById('challenge-panel').classList.toggle('visible', tab === 'challenge');
+
+  // Update editor label to signal challenge mode
+  const editorLabel = document.getElementById('editor-mode-label');
+  if (editorLabel) editorLabel.textContent = tab === 'challenge' ? '⚡ CHALLENGE' : 'EDITOR';
+}
+
+// ============================================================
+// CHALLENGE DESCRIPTION RENDERER
+// ============================================================
+function renderDesc(desc) {
+  // If already HTML (mod7+ challenges use <code> tags directly), preserve it but wrap newlines
+  if (desc.includes('<code>') || desc.includes('<em>') || desc.includes('<strong>')) {
+    return desc.replace(/\n/g, '<br>');
+  }
+  // Otherwise escape HTML, convert backticks to <code>, and preserve newlines
+  return desc
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/`([^`\n]+)`/g, '<code>$1</code>')
+    .replace(/\n/g, '<br>');
 }
 
 // ============================================================
@@ -2021,14 +2061,16 @@ function loadChallenge(lessonId) {
   document.getElementById('challenge-xp-tag').textContent = done
     ? `✓ COMPLETED — ${ch.xp} XP EARNED`
     : `+${ch.xp} XP on completion`;
-  document.getElementById('challenge-desc').textContent = ch.desc;
+  document.getElementById('challenge-desc').innerHTML = renderDesc(ch.desc);
 
   // Reset test results to pending state
+  const countEl = document.getElementById('test-count-label');
+  if (countEl) countEl.textContent = '';
   const container = document.getElementById('test-results-container');
   container.innerHTML = ch.tests.map((t, i) =>
     `<div class="test-item pending" id="titem-${i}">
        <span class="test-icon">○</span>
-       <div><div class="test-label">${escHtml(t.label)}</div></div>
+       <div><div class="test-label">${escHtml(t.label || t.desc || '')}</div></div>
      </div>`
   ).join('');
 
@@ -2046,10 +2088,6 @@ function loadChallenge(lessonId) {
     document.getElementById('run-tests-btn').insertAdjacentElement('afterend', msg);
   }
 
-  // Challenge starter code into editor (only on first load of lesson)
-  if (lessonEditor && lessonEditor.getValue().trim() === '' || currentLesson) {
-    // Don't overwrite; editor holds lesson starter or user's work
-  }
 }
 
 function escHtml(s) {
@@ -2093,16 +2131,24 @@ window._js_test_results = function(pyProxy) {
   const lessonId = currentLesson ? currentLesson.lesson.id : null;
   const ch = lessonId ? CHALLENGES[lessonId] : null;
 
+  let passedCount = 0;
   results.forEach((r, i) => {
     const el = document.getElementById('titem-' + i);
     if (!el) return;
     const passed = r.passed === true || r.get && r.get('passed');
     const msg    = r.msg    || (r.get && r.get('msg')) || '';
     const label  = r.label  || (r.get && r.get('label')) || '';
+    if (passed) passedCount++;
     el.className = 'test-item ' + (passed ? 'pass' : 'fail');
     el.innerHTML = `<span class="test-icon">${passed ? '✓' : '✗'}</span>
       <div><div class="test-label">${escHtml(label)}</div>${msg ? `<div class="test-msg">${escHtml(String(msg))}</div>` : ''}</div>`;
   });
+
+  const countEl = document.getElementById('test-count-label');
+  if (countEl) {
+    countEl.textContent = `${passedCount}/${results.length}`;
+    countEl.style.color = passedCount === results.length ? 'var(--green)' : (passedCount > 0 ? 'var(--amber)' : 'var(--red)');
+  }
 
   if (allPassed && ch && lessonId) {
     awardXP(lessonId, ch.xp);
@@ -2113,10 +2159,14 @@ window._js_test_results = function(pyProxy) {
 
     const existing = document.getElementById('challenge-success-msg');
     if (!existing) {
+      const allLessons = CURRICULUM.flatMap(m => m.lessons.map(l => Object.assign({}, l, { modId: m.id })));
+      const idx = allLessons.findIndex(l => l.id === lessonId);
+      const nextLesson = allLessons[idx + 1];
       const msg = document.createElement('div');
       msg.id = 'challenge-success-msg';
       msg.className = 'challenge-success';
-      msg.textContent = '✓ All tests passed! XP awarded.';
+      msg.innerHTML = `✓ All tests passed! +${ch.xp} XP awarded.` +
+        (nextLesson ? ` <button onclick="openLesson('${nextLesson.modId}','${nextLesson.id}')" style="margin-left:10px;font-family:var(--mono);font-size:10px;padding:3px 10px;background:var(--green-glow);border:1px solid var(--green-dim);color:var(--green);border-radius:2px;cursor:pointer;letter-spacing:1px">NEXT LESSON →</button>` : '');
       document.getElementById('run-tests-btn').insertAdjacentElement('afterend', msg);
     }
     // Refresh badge
@@ -2148,7 +2198,7 @@ async function runTests() {
   }).join('\n');
 
   const testCalls = ch.tests.map((t, i) =>
-    `_run_test(${JSON.stringify(t.label)}, _test_fn_${i})`
+    `_run_test(${JSON.stringify(t.label || t.desc || '')}, _test_fn_${i})`
   ).join('\n');
 
   const userCode = lessonEditor.getValue();
@@ -2487,7 +2537,32 @@ function clearSandboxOutput() {
   t.innerHTML = '<div class="out-line prompt">// output appears here — Ctrl+Enter to run</div>';
 }
 function resetCode() {
-  if (currentLesson) { lessonEditor.setValue(currentLesson.lesson.starterCode); clearOutput(); }
+  if (!currentLesson) return;
+  if (currentLessonTab === 'challenge') {
+    const ch = CHALLENGES[currentLesson.lesson.id];
+    lessonEditor.setValue(ch && ch.starter ? ch.starter : currentLesson.lesson.starterCode || '');
+  } else {
+    lessonEditor.setValue(currentLesson.lesson.starterCode || '');
+  }
+  clearOutput();
+}
+
+function resetChallenge() {
+  if (!currentLesson) return;
+  const ch = CHALLENGES[currentLesson.lesson.id];
+  if (ch && ch.starter) lessonEditor.setValue(ch.starter);
+  clearOutput();
+  // Reset test items back to pending
+  const countEl = document.getElementById('test-count-label');
+  if (countEl) countEl.textContent = '';
+  if (ch) {
+    document.getElementById('test-results-container').innerHTML = ch.tests.map((t, i) =>
+      `<div class="test-item pending" id="titem-${i}">
+         <span class="test-icon">○</span>
+         <div><div class="test-label">${escHtml(t.label || t.desc || '')}</div></div>
+       </div>`
+    ).join('');
+  }
 }
 function clearSandbox() {
   sandboxEditor.setValue(''); clearSandboxOutput();
